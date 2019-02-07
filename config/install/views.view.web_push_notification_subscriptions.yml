@@ -4,6 +4,8 @@ dependencies:
   module:
     - user
     - web_push_notification
+_core:
+  default_config_hash: Y9EPNeZzudF0Tz3eI_9SQ4ZhLuuUxilxH4tJ2gLA_e0
 id: web_push_notification_subscriptions
 label: 'Web Push Notification subscriptions'
 module: views
@@ -565,7 +567,7 @@ display:
         description: ''
         expanded: false
         parent: web_push_notification.settings
-        weight: 0
+        weight: 10
         context: '0'
         menu_name: admin
     cache_metadata:

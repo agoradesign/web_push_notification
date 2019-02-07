@@ -1,2 +1,5 @@
-administer web_push_notification:
-  title: 'Administer Web Push Notification configuration'
+administer web push notification settings:
+  title: 'Administer Web Push Notification settings'
+
+administer web push notification subscriptions:
+  title: 'Administer Web Push Notification subscriptions'

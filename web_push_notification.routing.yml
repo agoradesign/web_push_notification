@@ -5,3 +5,10 @@ web_push_notification.settings:
     _form: 'Drupal\web_push_notification\Form\SettingsForm'
   requirements:
     _permission: 'administer web push notification settings'
+
+web_push_notification.service_worker:
+  path: '/service_worker.js'
+  defaults:
+    _controller: '\Drupal\web_push_notification\Controller\WebPushNotificationController::serviceWorker'
+  requirements:
+    _access: 'TRUE'

@@ -1,0 +1,5 @@
+web_push_notification.settings:
+  title: 'Web push notification'
+  description: 'Web push notification settings.'
+  route_name: web_push_notification.settings
+  parent: system.admin_config_services

@@ -1,0 +1,9 @@
+web_push_notification.settings:
+  path: '/admin/config/services/web-push-notification'
+  defaults:
+    _title: 'Web push notification settings'
+    _form: 'Drupal\web_push_notification\Form\SettingsForm'
+  requirements:
+    _permission: 'administer web_push_notification'
+  options:
+    _admin_route: TRUE

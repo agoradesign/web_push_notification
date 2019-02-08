@@ -16,6 +16,7 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *   id = "wpn_subscription",
  *   label = @Translation("Web Push Notification subscription"),
  *   handlers = {
+ *     "storage_schema" = "Drupal\web_push_notification\SubscriptionStorageSchema",
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
  *     "views_data" = "Drupal\web_push_notification\Entity\SubscriptionViewsData",
  *     "form" = {

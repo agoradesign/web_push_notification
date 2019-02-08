@@ -12,3 +12,11 @@ web_push_notification.service_worker:
     _controller: '\Drupal\web_push_notification\Controller\WebPushNotificationController::serviceWorker'
   requirements:
     _access: 'TRUE'
+
+web_push_notification.subscribe:
+  path: '/push_notifications_subscribe'
+  defaults:
+    _controller: '\Drupal\web_push_notification\Controller\WebPushNotificationController::subscribe'
+  methods: [POST]
+  requirements:
+    _access: 'TRUE'

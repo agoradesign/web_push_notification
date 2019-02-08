@@ -6,6 +6,8 @@ use Drupal\Core\Controller\ControllerBase;
 use Drupal\Core\Extension\ModuleHandler;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
+use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 
 /**
@@ -54,6 +56,13 @@ class WebPushNotificationController extends ControllerBase {
       'Content-Type' => 'text/javascript',
       'Content-Length' => filesize($uri),
     ]);
+  }
+
+  /**
+   * Accepts a user confirmation for notifications subscribe.
+   */
+  public function subscribe(Request $request) {
+    return new Response();
   }
 
 }

@@ -2,5 +2,26 @@
 
 /**
  * @file
- * Primary module hooks for Web push notification module.
+ * Module hooks.
  */
+
+use Drupal\Core\Url;
+
+/**
+ * Implements hook_page_attachments_alter().
+ */
+function web_push_notification_page_attachments_alter(array &$attachments) {
+  $public_key = Drupal::config('web_push_notification.settings')->get('public_key');
+  if (!empty($public_key)) {
+    $url_options = [
+      'absolute' => TRUE,
+    ];
+    $settings = [
+      'publicKey' => $public_key,
+      'serviceWorkerUrl' => Url::fromRoute('web_push_notification.service_worker', [], $url_options)->toString(),
+      'subscribeUrl' => Url::fromRoute('web_push_notification.subscribe', [], $url_options)->toString(),
+    ];
+    $attachments['#attached']['drupalSettings']['webPushNotification'] = $settings;
+    $attachments['#attached']['library'][] = 'web_push_notification/register_service_worker';
+  }
+}

@@ -10,6 +10,15 @@ class SubscriptionStorageSchema extends \Drupal\Core\Entity\Sql\SqlContentEntity
    */
   protected function getSharedTableFieldSchema(\Drupal\Core\Field\FieldStorageDefinitionInterface $storage_definition, $table_name, array $column_mapping) {
     $schema = parent::getSharedTableFieldSchema($storage_definition, $table_name, $column_mapping);
+    $field_name = $storage_definition->getName();
+
+    switch ($field_name) {
+      case 'key':
+      case 'token':
+        $schema['fields'][$field_name]['not null'] = TRUE;
+        $this->addSharedTableFieldUniqueKey($storage_definition, $schema);
+        break;
+    }
 
     return $schema;
   }

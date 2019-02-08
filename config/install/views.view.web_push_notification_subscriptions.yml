@@ -194,7 +194,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: wpn_subscription_entity
+          entity_type: wpn_subscription
           entity_field: id
           plugin_id: field
         created:
@@ -261,7 +261,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: wpn_subscription_entity
+          entity_type: wpn_subscription
           entity_field: created
           plugin_id: field
         key:
@@ -326,7 +326,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: wpn_subscription_entity
+          entity_type: wpn_subscription
           entity_field: key
           plugin_id: field
         token:
@@ -391,7 +391,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: wpn_subscription_entity
+          entity_type: wpn_subscription
           entity_field: token
           plugin_id: field
         endpoint:
@@ -456,7 +456,7 @@ display:
           multi_type: separator
           separator: ', '
           field_api_classes: false
-          entity_type: wpn_subscription_entity
+          entity_type: wpn_subscription
           entity_field: endpoint
           plugin_id: field
         operations:
@@ -524,7 +524,7 @@ display:
           exposed: false
           expose:
             label: ''
-          entity_type: wpn_subscription_entity
+          entity_type: wpn_subscription
           entity_field: id
           plugin_id: standard
       title: 'Web Push Notification subscriptions'

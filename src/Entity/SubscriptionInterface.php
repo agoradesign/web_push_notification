@@ -11,7 +11,7 @@ use Drupal\user\EntityOwnerInterface;
  *
  * @ingroup web_push_notification
  */
-interface SubscriptionEntityInterface extends ContentEntityInterface {
+interface SubscriptionInterface extends ContentEntityInterface {
 
   /**
    * Gets the subscription key.
@@ -78,7 +78,7 @@ interface SubscriptionEntityInterface extends ContentEntityInterface {
    * @param int $timestamp
    *   The Notification subscription creation timestamp.
    *
-   * @return \Drupal\web_push_notification\Entity\SubscriptionEntityInterface
+   * @return \Drupal\web_push_notification\Entity\SubscriptionInterface
    *   The called Notification subscription entity.
    */
   public function setCreatedTime($timestamp);

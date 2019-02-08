@@ -9,7 +9,7 @@ use Drupal\Core\Entity\ContentEntityDeleteForm;
  *
  * @ingroup web_push_notification
  */
-class SubscriptionEntityDeleteForm extends ContentEntityDeleteForm {
+class SubscriptionDeleteForm extends ContentEntityDeleteForm {
 
 
 }

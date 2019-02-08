@@ -7,7 +7,7 @@ use Drupal\views\EntityViewsData;
 /**
  * Provides Views data for Notification subscription entities.
  */
-class SubscriptionEntityViewsData extends EntityViewsData {
+class SubscriptionViewsData extends EntityViewsData {
 
   /**
    * {@inheritdoc}

@@ -13,13 +13,13 @@ use Drupal\Core\Entity\EntityTypeInterface;
  * @ingroup web_push_notification
  *
  * @ContentEntityType(
- *   id = "wpn_subscription_entity",
+ *   id = "wpn_subscription",
  *   label = @Translation("Web Push Notification subscription"),
  *   handlers = {
  *     "view_builder" = "Drupal\Core\Entity\EntityViewBuilder",
- *     "views_data" = "Drupal\web_push_notification\Entity\SubscriptionEntityViewsData",
+ *     "views_data" = "Drupal\web_push_notification\Entity\SubscriptionViewsData",
  *     "form" = {
- *       "delete" = "Drupal\web_push_notification\Form\SubscriptionEntityDeleteForm",
+ *       "delete" = "Drupal\web_push_notification\Form\SubscriptionDeleteForm",
  *     },
  *   },
  *   base_table = "wpn_subscriptions",
@@ -29,11 +29,11 @@ use Drupal\Core\Entity\EntityTypeInterface;
  *     "id" = "id",
  *   },
  *   links = {
- *     "delete-form" = "/admin/config/services/web-push-notification/subscriptions/{wpn_subscription_entity}/delete",
+ *     "delete-form" = "/admin/config/services/web-push-notification/subscriptions/{wpn_subscription}/delete",
  *   }
  * )
  */
-class SubscriptionEntity extends ContentEntityBase implements SubscriptionEntityInterface {
+class Subscription extends ContentEntityBase implements SubscriptionInterface {
 
   /**
    * {@inheritdoc}

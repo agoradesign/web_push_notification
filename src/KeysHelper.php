@@ -10,8 +10,10 @@ use Minishlink\WebPush\VAPID;
  */
 class KeysHelper {
 
+  const SETTINGS = 'web_push_notification.settings';
+
   /**
-   * @var \Drupal\Core\Config\ConfigFactoryInterface
+   * @var \Drupal\Core\Config\ImmutableConfig
    */
   protected $config;
 
@@ -21,7 +23,7 @@ class KeysHelper {
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config
    */
   public function __construct(ConfigFactoryInterface $config) {
-    $this->config = $config;
+    $this->config = $config->get(self::SETTINGS);
   }
 
   /**
@@ -31,7 +33,7 @@ class KeysHelper {
    *   The public key.
    */
   public function getPublicKey(): string {
-    return $this->config('web_push_notification.settings')->get('public_key');
+    return $this->config->get('public_key');
   }
 
   /**
@@ -41,7 +43,7 @@ class KeysHelper {
    *   The private key.
    */
   public function getPrivateKey(): string {
-    return $this->config('web_push_notification.settings')->get('private_key');
+    return $this->config->get('private_key');
   }
 
   /**

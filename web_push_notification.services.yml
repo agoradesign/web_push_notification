@@ -1,0 +1,4 @@
+services:
+  web_push_notification.keys_helper:
+    class: Drupal\web_push_notification\KeysHelper
+    arguments: ['@config.factory']

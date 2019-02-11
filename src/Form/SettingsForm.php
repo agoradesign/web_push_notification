@@ -2,14 +2,44 @@
 
 namespace Drupal\web_push_notification\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
-use Minishlink\WebPush\VAPID;
+use Drupal\web_push_notification\KeysHelper;
+use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
  * Web Push Notification settings form.
  */
 class SettingsForm extends ConfigFormBase {
+
+  /**
+   * @var \Drupal\web_push_notification\KeysHelper
+   */
+  protected $keysHelper;
+
+  /**
+   * Constructs a \Drupal\system\ConfigFormBase object.
+   *
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The factory for configuration objects.
+   * @param \Drupal\web_push_notification\KeysHelper $keys_helper
+   *   The push keys helper service.
+   */
+  public function __construct(ConfigFactoryInterface $config_factory, KeysHelper $keys_helper) {
+    parent::__construct($config_factory);
+    $this->keysHelper = $keys_helper;
+  }
+
+  /**
+   * {@inheritdoc}
+   */
+  public static function create(ContainerInterface $container) {
+    return new static(
+      $container->get('config.factory'),
+      $container->get('web_push_notification.keys_helper')
+    );
+  }
 
   /**
    * {@inheritdoc}
@@ -22,7 +52,9 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   protected function getEditableConfigNames() {
-    return ['web_push_notification.settings'];
+    return [
+      'web_push_notification.settings'
+    ];
   }
 
   /**
@@ -30,12 +62,11 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
-    $config = $this->config('web_push_notification.settings');
 
     $form['public_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Public Key'),
-      '#default_value' => $config->get('public_key'),
+      '#default_value' => $this->keysHelper->getPublicKey(),
       '#required' => TRUE,
       '#maxlength' => 100,
     ];
@@ -43,14 +74,14 @@ class SettingsForm extends ConfigFormBase {
     $form['private_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Private Key'),
-      '#default_value' => $config->get('private_key'),
+      '#default_value' => $this->keysHelper->getPrivateKey(),
       '#required' => TRUE,
       '#maxlength' => 100,
     ];
 
     $form['actions']['generate'] = [
       '#type' => 'submit',
-      '#value' => $this->t($config->get('public_key') ? 'Regenerate keys' : 'Generate keys'),
+      '#value' => $this->t($this->keysHelper->isKeysDefined() ? 'Regenerate keys' : 'Generate keys'),
       '#limit_validation_errors' => [], // Skip required fields validation.
       '#submit' => ['::generateKeys'],
     ];
@@ -70,7 +101,7 @@ class SettingsForm extends ConfigFormBase {
    * Form submit callback for keys (re)generation.
    */
   public function generateKeys(array &$form, FormStateInterface $form_state) {
-    $keys = VAPID::createVapidKeys();
+    $keys = $this->keysHelper->generateKeys();
     $this->saveKeys($keys['publicKey'], $keys['privateKey']);
     $this->messenger()->addStatus($this->t('Public and private keys have been generated.'));
   }

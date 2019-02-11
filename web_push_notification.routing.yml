@@ -6,6 +6,14 @@ web_push_notification.settings:
   requirements:
     _permission: 'administer web push notification settings'
 
+web_push_notification.test_notification:
+  path: '/admin/config/services/web-push-notification/test'
+  defaults:
+    _title: 'Test notification'
+    _form: 'Drupal\web_push_notification\Form\TestNotification'
+  requirements:
+    _permission: 'allow to send test notification'
+
 web_push_notification.service_worker:
   path: '/service_worker.js'
   defaults:
@@ -20,3 +28,4 @@ web_push_notification.subscribe:
   methods: [POST]
   requirements:
     _access: 'TRUE'
+

@@ -3,3 +3,6 @@ administer web push notification settings:
 
 administer web push notification subscriptions:
   title: 'Administer Web Push Notification subscriptions'
+
+allow to send test notification:
+  title: 'Allow to send a test notification'

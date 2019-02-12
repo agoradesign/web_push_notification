@@ -93,7 +93,10 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    $this->saveKeys($form_state->getValue('public_key'), $form_state->getValue('private_key'));
+    $this->saveKeys(
+      $form_state->getValue('public_key'),
+      $form_state->getValue('private_key')
+    );
     $this->messenger()->addStatus($this->t('Keys have been saved.'));
   }
 

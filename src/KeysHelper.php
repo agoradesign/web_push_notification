@@ -3,6 +3,7 @@
 namespace Drupal\web_push_notification;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Url;
 use Minishlink\WebPush\VAPID;
 
 /**
@@ -65,6 +66,23 @@ class KeysHelper {
     $public = $this->getPublicKey();
     $private = $this->getPublicKey();
     return $public && $private;
+  }
+
+  /**
+   * Returns an array suitable for VAPID::validate().
+   *
+   * @see VAPID::validate()
+   *
+   * @return array
+   */
+  public function getVapidAuth(): array {
+    return [
+      'subject' => Url::fromRoute('<front>', [], [
+        'absolute' => TRUE
+      ])->toString(),
+      'publicKey' => $this->getPublicKey(),
+      'privateKey' => $this->getPrivateKey(),
+    ];
   }
 
 }

@@ -49,14 +49,14 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
   /**
    * {@inheritdoc}
    */
-  public function getKey() {
+  public function getPublicKey() {
     return $this->get('key')->value;
   }
 
   /**
    * {@inheritdoc}
    */
-  public function setKey($key) {
+  public function setPublicKey($key) {
     $this->set('key', $key);
     return $this;
   }

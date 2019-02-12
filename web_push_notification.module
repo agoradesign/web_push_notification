@@ -6,6 +6,7 @@
  */
 
 use Drupal\Core\Url;
+use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_page_attachments_alter().
@@ -23,5 +24,15 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
     ];
     $attachments['#attached']['drupalSettings']['webPushNotification'] = $settings;
     $attachments['#attached']['library'][] = 'web_push_notification/register_service_worker';
+  }
+}
+
+/**
+ * Implements hook_entity_insert().
+ */
+function web_push_notification_entity_insert(EntityInterface $entity) {
+  if ($entity->getEntityTypeId() == 'node') {
+    $sender = Drupal::service('web_push_notification.notification_sender');
+    $sender->start($entity);
   }
 }

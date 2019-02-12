@@ -4,6 +4,11 @@ namespace Drupal\web_push_notification\Form;
 
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Queue\SuspendQueueException;
+use Drupal\node\Entity\Node;
+use Drupal\web_push_notification\NotificationItem;
+use Drupal\web_push_notification\NotificationQueue;
+use Drupal\web_push_notification\WebPushSender;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\web_push_notification\KeysHelper;
 
@@ -17,16 +22,20 @@ class TestNotification extends FormBase {
    */
   protected $keysHelper;
 
+  protected $queue;
+
   /**
    * Constructs a new TestNotification object.
    */
-  public function __construct(KeysHelper $keys_helper) {
+  public function __construct(KeysHelper $keys_helper, NotificationQueue $queue) {
     $this->keysHelper = $keys_helper;
+    $this->queue = $queue;
   }
 
   public static function create(ContainerInterface $container) {
     return new static(
-      $container->get('web_push_notification.keys_helper')
+      $container->get('web_push_notification.keys_helper'),
+      $container->get('web_push_notification.queue')
     );
   }
 
@@ -81,6 +90,7 @@ class TestNotification extends FormBase {
     $form['send'] = [
       '#type' => 'submit',
       '#value' => $this->t('Send'),
+      '#button_type' => 'primary',
     ];
 
     return $form;
@@ -97,11 +107,27 @@ class TestNotification extends FormBase {
    * {@inheritdoc}
    */
   public function submitForm(array &$form, FormStateInterface $form_state) {
-    // Display result.
-    foreach ($form_state->getValues() as $key => $value) {
-      drupal_set_message($key . ': ' . $value);
-    }
+    $item = new NotificationItem();
+    $item->title = $form_state->getValue('title');
+    $item->message = $form_state->getValue('message');
+    $this->queue->startWithItem($item);
 
+    $queue = $this->queue->getQueue();
+    /** @var \Drupal\Core\Queue\QueueWorkerManager $worker */
+    $worker = \Drupal::service('plugin.manager.queue_worker')->createInstance('web_push_queue');
+
+    while ($unprocessed = $queue->claimItem()) {
+      try {
+        $worker->processItem($unprocessed);
+        $queue->deleteItem($unprocessed);
+      }
+      catch (SuspendQueueException $e) {
+        $queue->releaseItem($item);
+      }
+      catch (\Exception $e) {
+
+      }
+    }
   }
 
 }

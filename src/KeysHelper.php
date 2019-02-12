@@ -73,9 +73,16 @@ class KeysHelper {
    *
    * @see VAPID::validate()
    *
+   * @throws \Drupal\web_push_notification\AuthKeysException
+   *   When public or/and private keys isn't defined.
+   *
    * @return array
    */
   public function getVapidAuth(): array {
+    if (!$this->isKeysDefined()) {
+      throw new AuthKeysException('Public, private keys must be defined.');
+    }
+
     return [
       'subject' => Url::fromRoute('<front>', [], [
         'absolute' => TRUE

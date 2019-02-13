@@ -7,20 +7,41 @@ use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription as PushSubscription;
 
 /**
- * Class WebPushSender
+ * Sends push notifications.
  *
  * @package Drupal\web_push_notification
  */
 class WebPushSender implements WebPushSenderInterface {
 
+  /**
+   * @var \Drupal\web_push_notification\KeysHelper
+   */
   protected $keyHelper;
 
+  /**
+   * @var \Minishlink\WebPush\WebPush
+   */
   protected $webPush;
 
+  /**
+   * WebPushSender constructor.
+   *
+   * @param \Drupal\web_push_notification\KeysHelper $keysHelper
+   *   The keys helper service.
+   */
   public function __construct(KeysHelper $keysHelper) {
     $this->keyHelper = $keysHelper;
   }
 
+  /**
+   * Returns the web push sender engine.
+   *
+   * @return \Minishlink\WebPush\WebPush
+   *   The sender engine.
+   *
+   * @throws \Drupal\web_push_notification\AuthKeysException
+   * @throws \ErrorException
+   */
   public function getWebPush(): WebPush {
     if (!$this->webPush) {
       $auth = $this->keyHelper->getVapidAuth();
@@ -29,19 +50,39 @@ class WebPushSender implements WebPushSenderInterface {
     return $this->webPush;
   }
 
+  /**
+   * Sends notifications.
+   *
+   * @param \Drupal\web_push_notification\NotificationItem $item
+   *   The notification item.
+   *
+   * @throws \Drupal\web_push_notification\AuthKeysException
+   * @throws \ErrorException
+   */
   public function send(NotificationItem $item) {
     if (empty($item->ids)) {
       return;
     }
     $webPush = $this->getWebPush();
-    $notifications = $this->createNotifications($item);
-    foreach ($notifications as $notification) {
-      $webPush->sendNotification($notification['subscription'], $notification['payload']);
+    $subscriptions = $this->createSubscriptions($item);
+    foreach ($subscriptions as $subscription) {
+      $webPush->sendNotification($subscription['subscription'], $subscription['payload']);
     }
-    $webPush->flush(count($notifications));
+    $webPush->flush(count($subscriptions));
   }
 
-  protected function createNotifications(NotificationItem $item): array {
+  /**
+   * Expands a notification item to a subscription list.
+   *
+   * @param \Drupal\web_push_notification\NotificationItem $item
+   *   The notification item.
+   *
+   * @return Minishlink\WebPush\Subscription[]
+   *   A list of push subscriptions.
+   *
+   * @throws \ErrorException
+   */
+  protected function createSubscriptions(NotificationItem $item): array {
     $notifications = [];
     foreach ($item->ids as $subscription_id) {
       if (!($subscription = Subscription::load($subscription_id))) {

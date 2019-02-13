@@ -13,7 +13,7 @@ use Drupal\Core\Queue\QueueInterface;
 class NotificationQueue {
 
   /**
-   * @var Drupal\Core\Queue\QueueFactory
+   * @var \Drupal\Core\Queue\QueueFactory
    */
   protected $queueFactory;
 
@@ -48,7 +48,7 @@ class NotificationQueue {
       ->getQuery();
 
     $start = 0;
-    $limit = 10; // TODO: configurable
+    $limit = $this->getProcessingLimit();
 
     while ($ids = $query->range($start, $limit)->execute()) {
       $item = new NotificationItem();
@@ -60,6 +60,17 @@ class NotificationQueue {
       $queue->createItem($item);
       $start += $limit;
     }
+  }
+
+  /**
+   * Returns a queue processing limit.
+   *
+   * @return int
+   *   The queue processing limit.
+   */
+  protected function getProcessingLimit(): int {
+    return (int) \Drupal::config('web_push_notification.settings')
+      ->get('queue_batch_size');
   }
 
 }

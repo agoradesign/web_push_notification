@@ -84,11 +84,13 @@ class KeysHelper {
     }
 
     return [
-      'subject' => Url::fromRoute('<front>', [], [
-        'absolute' => TRUE
-      ])->toString(),
-      'publicKey' => $this->getPublicKey(),
-      'privateKey' => $this->getPrivateKey(),
+      'VAPID' => [
+        'subject' => Url::fromRoute('<front>', [], [
+          'absolute' => TRUE
+        ])->toString(),
+        'publicKey' => $this->getPublicKey(),
+        'privateKey' => $this->getPrivateKey(),
+      ],
     ];
   }
 

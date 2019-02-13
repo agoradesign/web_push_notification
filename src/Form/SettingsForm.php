@@ -62,8 +62,14 @@ class SettingsForm extends ConfigFormBase {
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
+    $config = $this->config('web_push_notification.settings');
 
-    $form['public_key'] = [
+    $form['auth'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Auth parameters'),
+    ];
+
+    $form['auth']['public_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Public Key'),
       '#default_value' => $this->keysHelper->getPublicKey(),
@@ -71,7 +77,7 @@ class SettingsForm extends ConfigFormBase {
       '#maxlength' => 100,
     ];
 
-    $form['private_key'] = [
+    $form['auth']['private_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Private Key'),
       '#default_value' => $this->keysHelper->getPrivateKey(),
@@ -79,11 +85,24 @@ class SettingsForm extends ConfigFormBase {
       '#maxlength' => 100,
     ];
 
-    $form['actions']['generate'] = [
+    $form['auth']['generate'] = [
       '#type' => 'submit',
       '#value' => $this->t($this->keysHelper->isKeysDefined() ? 'Regenerate keys' : 'Generate keys'),
       '#limit_validation_errors' => [], // Skip required fields validation.
       '#submit' => ['::generateKeys'],
+    ];
+
+    $form['config'] = [
+      '#type' => 'fieldset',
+      '#title' => $this->t('Configuration'),
+    ];
+
+    $form['config']['queue_batch_size'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Queue batch size'),
+      '#description' => $this->t('How many number of notifications to send during the queue process.'),
+      '#default_value' => $config->get('queue_batch_size') ?? 100,
+      '#required' => TRUE,
     ];
 
     return $form;
@@ -92,12 +111,29 @@ class SettingsForm extends ConfigFormBase {
   /**
    * {@inheritdoc}
    */
+  public function validateForm(array &$form, FormStateInterface $form_state) {
+    $qbs = $form_state->getValue('queue_batch_size');
+    if (!($qbs >= 1 && $qbs <= 1000)) {
+      $form_state->setErrorByName('queue_batch_size', $this->t('Queue batch size must be in range 1..1000 inclusively.'));
+    }
+  }
+
+  /**
+   * {@inheritdoc}
+   */
   public function submitForm(array &$form, FormStateInterface $form_state) {
+    $config = $this->config('web_push_notification.settings');
+
+    // Save the keys.
     $this->saveKeys(
       $form_state->getValue('public_key'),
       $form_state->getValue('private_key')
     );
-    $this->messenger()->addStatus($this->t('Keys have been saved.'));
+
+    $config->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
+      ->save();
+
+    $this->messenger()->addStatus($this->t('Web Push notification settings have been updated.'));
   }
 
   /**

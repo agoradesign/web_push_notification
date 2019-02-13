@@ -54,7 +54,9 @@ class NotificationQueue {
       $item = new NotificationItem();
       $item->ids = $ids;
       $item->title = $baseItem->title;
-      $item->message = $baseItem->message;
+      $item->body = $baseItem->body;
+      $item->icon = $baseItem->icon;
+      $item->url = $baseItem->url;
       $queue->createItem($item);
       $start += $limit;
     }

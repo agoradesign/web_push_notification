@@ -24,13 +24,21 @@ class WebPushSender implements WebPushSenderInterface {
   protected $webPush;
 
   /**
+   * @var \Drupal\web_push_notification\SubscriptionPurge
+   */
+  protected $purge;
+
+  /**
    * WebPushSender constructor.
    *
    * @param \Drupal\web_push_notification\KeysHelper $keysHelper
    *   The keys helper service.
+   * @param \Drupal\web_push_notification\SubscriptionPurge $purge
+   *   The subscription purge service.
    */
-  public function __construct(KeysHelper $keysHelper) {
+  public function __construct(KeysHelper $keysHelper, SubscriptionPurge $purge) {
     $this->keyHelper = $keysHelper;
+    $this->purge = $purge;
   }
 
   /**
@@ -68,7 +76,10 @@ class WebPushSender implements WebPushSenderInterface {
     foreach ($subscriptions as $subscription) {
       $webPush->sendNotification($subscription['subscription'], $subscription['payload']);
     }
-    $webPush->flush(count($subscriptions));
+    $results = $webPush->flush(count($subscriptions));
+    if (is_array($results)) {
+      $this->purge->delete($results);
+    }
   }
 
   /**

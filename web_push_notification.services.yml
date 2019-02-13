@@ -9,4 +9,8 @@ services:
 
   web_push_notification.sender:
     class: Drupal\web_push_notification\WebPushSender
-    arguments: ['@web_push_notification.keys_helper']
+    arguments: ['@web_push_notification.keys_helper', '@web_push_notification.purge']
+
+  web_push_notification.purge:
+    class: Drupal\web_push_notification\SubscriptionPurge
+    arguments: ['@entity_type.manager']

@@ -88,7 +88,7 @@ class WebPushSender implements WebPushSenderInterface {
    * @param \Drupal\web_push_notification\NotificationItem $item
    *   The notification item.
    *
-   * @return Minishlink\WebPush\Subscription[]
+   * @return \Minishlink\WebPush\Subscription[]
    *   A list of push subscriptions.
    *
    * @throws \ErrorException

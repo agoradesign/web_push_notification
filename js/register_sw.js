@@ -34,7 +34,7 @@
               .then(function (subscription) {
 
                 if (subscription) {
-                  return subscription;
+                  return;
                 }
 
                 var publicKey = settings.webPushNotification.publicKey;
@@ -48,6 +48,9 @@
               });
           })
           .then(function (subscription) {
+            if (!subscription) {
+              return;
+            }
 
             var key = subscription.getKey('p256dh');
             var token = subscription.getKey('auth');

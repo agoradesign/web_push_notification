@@ -60,12 +60,12 @@ class TestNotification extends FormBase {
     $form['test']['title'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Title'),
-      '#maxlength' => 64,
+      '#maxlength' => 128,
       '#size' => 64,
       '#weight' => '0',
       '#required' => TRUE,
     ];
-    $form['test']['message'] = [
+    $form['test']['body'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Message'),
       '#weight' => '0',
@@ -75,7 +75,7 @@ class TestNotification extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Icon'),
       '#description' => $this->t('Enter the icon URL which will show in the notification.'),
-      '#maxlength' => 64,
+      '#maxlength' => 512,
       '#size' => 64,
       '#weight' => '0',
     ];
@@ -83,7 +83,7 @@ class TestNotification extends FormBase {
       '#type' => 'textfield',
       '#title' => $this->t('Url'),
       '#description' => $this->t('Enter the URL on which user will redirect after clicking on the notification.'),
-      '#maxlength' => 64,
+      '#maxlength' => 512,
       '#size' => 64,
       '#weight' => '0',
     ];
@@ -109,9 +109,11 @@ class TestNotification extends FormBase {
   public function submitForm(array &$form, FormStateInterface $form_state) {
     $item = new NotificationItem();
     $item->title = $form_state->getValue('title');
-    $item->message = $form_state->getValue('message');
-    $this->queue->startWithItem($item);
+    $item->body = $form_state->getValue('body');
+    $item->icon = $form_state->getValue('icon');
+    $item->url = $form_state->getValue('url');
 
+    $this->queue->startWithItem($item);
     $queue = $this->queue->getQueue();
     /** @var \Drupal\Core\Queue\QueueWorkerManager $worker */
     $worker = \Drupal::service('plugin.manager.queue_worker')->createInstance('web_push_queue');

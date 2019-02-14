@@ -13,18 +13,38 @@ use Drupal\Core\Entity\EntityInterface;
  */
 function web_push_notification_page_attachments_alter(array &$attachments) {
   $public_key = Drupal::config('web_push_notification.settings')->get('public_key');
-  if (!empty($public_key)) {
-    $url_options = [
-      'absolute' => TRUE,
-    ];
-    $settings = [
-      'publicKey' => $public_key,
-      'serviceWorkerUrl' => Url::fromRoute('web_push_notification.service_worker', [], $url_options)->toString(),
-      'subscribeUrl' => Url::fromRoute('web_push_notification.subscribe', [], $url_options)->toString(),
-    ];
-    $attachments['#attached']['drupalSettings']['webPushNotification'] = $settings;
-    $attachments['#attached']['library'][] = 'web_push_notification/register_service_worker';
+  if (empty($public_key)) {
+    return;
   }
+
+  $url_options = [
+    'absolute' => TRUE,
+  ];
+  $settings = [
+    'publicKey' => $public_key,
+    'serviceWorkerUrl' => Url::fromRoute('web_push_notification.service_worker', [], $url_options)->toString(),
+    'subscribeUrl' => Url::fromRoute('web_push_notification.subscribe', [], $url_options)->toString(),
+  ];
+
+  $pages = \Drupal::config('web_push_notification.settings')->get('pages');
+  if ($pages) {
+    $pages = mb_strtolower($pages);
+    /** @var  \Symfony\Component\HttpFoundation\Request $request */
+    $request = \Drupal::service('request_stack')->getCurrentRequest();
+    $path = \Drupal::service('path.current')->getPath($request);
+    $path = $path === '/' ? $path : rtrim($path, '/');
+    /** @var \Drupal\Core\Path\AliasManager $aliasManager */
+    $aliasManager = \Drupal::service('path.alias_manager');
+    $path_alias = mb_strtolower($aliasManager->getAliasByPath($path));
+    /** @var \Drupal\Core\Path\PathMatcher $path_matcher */
+    $path_matcher = \Drupal::service('path.matcher');
+    if ($path_matcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $path_matcher->matchPath($path, $pages))) {
+      return;
+    }
+  }
+
+  $attachments['#attached']['drupalSettings']['webPushNotification'] = $settings;
+  $attachments['#attached']['library'][] = 'web_push_notification/register_service_worker';
 }
 
 /**

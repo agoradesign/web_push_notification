@@ -105,6 +105,16 @@ class SettingsForm extends ConfigFormBase {
       '#required' => TRUE,
     ];
 
+    $form['config']['pages'] = [
+      '#type' => 'textarea',
+      '#title' => $this->t('Pages'),
+      '#description' => $this->t("Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard. An example path is %user-wildcard for every user page. %front is the front page.", [
+        '%user-wildcard' => '/user/*',
+        '%front' => '<front>',
+      ]),
+      '#default_value' => $config->get('pages') ?? '/admin/*',
+    ];
+
     return $form;
   }
 
@@ -130,7 +140,9 @@ class SettingsForm extends ConfigFormBase {
       $form_state->getValue('private_key')
     );
 
-    $config->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
+    $config
+      ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
+      ->set('pages', $form_state->getValue('pages'))
       ->save();
 
     $this->messenger()->addStatus($this->t('Web Push notification settings have been updated.'));

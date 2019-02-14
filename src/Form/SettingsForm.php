@@ -3,8 +3,10 @@
 namespace Drupal\web_push_notification\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Url;
 use Drupal\web_push_notification\KeysHelper;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
@@ -19,16 +21,26 @@ class SettingsForm extends ConfigFormBase {
   protected $keysHelper;
 
   /**
+   * The entity storage.
+   *
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
+   */
+  protected $bundleInfo;
+
+  /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The factory for configuration objects.
    * @param \Drupal\web_push_notification\KeysHelper $keys_helper
    *   The push keys helper service.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info
+   *   The entity type bundle info service.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, KeysHelper $keys_helper) {
+  public function __construct(ConfigFactoryInterface $config_factory, KeysHelper $keys_helper, EntityTypeBundleInfoInterface $bundle_info) {
     parent::__construct($config_factory);
     $this->keysHelper = $keys_helper;
+    $this->bundleInfo = $bundle_info;
   }
 
   /**
@@ -37,7 +49,8 @@ class SettingsForm extends ConfigFormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('config.factory'),
-      $container->get('web_push_notification.keys_helper')
+      $container->get('web_push_notification.keys_helper'),
+      $container->get('entity_type.bundle.info')
     );
   }
 
@@ -58,6 +71,16 @@ class SettingsForm extends ConfigFormBase {
   }
 
   /**
+   * Returns a list of node bundles.
+   *
+   * @return array
+   *  The list of node bundles.
+   */
+  protected function getNodeBundles(): array {
+    return $this->bundleInfo->getBundleInfo('node');
+  }
+
+  /**
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
@@ -68,7 +91,6 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'fieldset',
       '#title' => $this->t('Auth parameters'),
     ];
-
     $form['auth']['public_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Public Key'),
@@ -76,7 +98,6 @@ class SettingsForm extends ConfigFormBase {
       '#required' => TRUE,
       '#maxlength' => 100,
     ];
-
     $form['auth']['private_key'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Private Key'),
@@ -84,7 +105,6 @@ class SettingsForm extends ConfigFormBase {
       '#required' => TRUE,
       '#maxlength' => 100,
     ];
-
     $form['auth']['generate'] = [
       '#type' => 'submit',
       '#value' => $this->t($this->keysHelper->isKeysDefined() ? 'Regenerate keys' : 'Generate keys'),
@@ -92,11 +112,50 @@ class SettingsForm extends ConfigFormBase {
       '#submit' => ['::generateKeys'],
     ];
 
+    $form['content'] = [
+      '#type' => 'fieldset',
+    ];
+    $form['content']['bundles'] = [
+      '#type' => 'table',
+      '#tableselect' => TRUE,
+      '#default_value' => [],
+      '#header' => [
+        [
+          'data' => $this->t('Content type'),
+          'class' => ['bundle'],
+        ],
+        [
+          'data' => $this->t('Settings'),
+          'class' => ['operations'],
+        ],
+      ],
+      '#empty' => $this->t('No content types available.'),
+    ];
+    foreach ($this->getNodeBundles() as $id => $info) {
+      $form['content']['bundles'][$id] = [
+        'bundle' => [
+          '#markup' => $info['label'],
+        ],
+        'operations' => [
+          '#type' => 'operations',
+          '#links' => [
+            'configure' => [
+              'title' => $this->t('Configure'),
+              'url' => Url::fromRoute('web_push_notification.bundle_configure', [
+                'bundle' => $id,
+              ]),
+              'query' => \Drupal::destination()->getAsArray(),
+            ],
+          ],
+        ],
+      ];
+      $form['content']['bundles']['#default_value'][$id] = $config->get("bundles.$id");
+    }
+
     $form['config'] = [
       '#type' => 'fieldset',
       '#title' => $this->t('Configuration'),
     ];
-
     $form['config']['queue_batch_size'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Queue batch size'),
@@ -104,7 +163,6 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('queue_batch_size') ?? 100,
       '#required' => TRUE,
     ];
-
     $form['config']['pages'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Pages'),
@@ -143,6 +201,7 @@ class SettingsForm extends ConfigFormBase {
     $config
       ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
       ->set('pages', $form_state->getValue('pages'))
+      ->set('bundles', $form_state->getValue('bundles'))
       ->save();
 
     $this->messenger()->addStatus($this->t('Web Push notification settings have been updated.'));

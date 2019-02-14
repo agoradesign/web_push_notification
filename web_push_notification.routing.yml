@@ -6,6 +6,14 @@ web_push_notification.settings:
   requirements:
     _permission: 'administer web push notification settings'
 
+web_push_notification.bundle_configure:
+  path: '/admin/config/services/web-push-notification/{bundle}/configure'
+  defaults:
+    _title: 'Content type configuration'
+    _form: 'Drupal\web_push_notification\Form\BundleConfigForm'
+  requirements:
+    _permission: 'administer web push notification settings'
+
 web_push_notification.test_notification:
   path: '/admin/config/services/web-push-notification/test'
   defaults:

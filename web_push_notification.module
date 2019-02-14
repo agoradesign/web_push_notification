@@ -51,8 +51,11 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
  * Implements hook_entity_insert().
  */
 function web_push_notification_entity_insert(EntityInterface $entity) {
-  if ($entity->getEntityTypeId() == 'node') {
-    $sender = Drupal::service('web_push_notification.notification_sender');
+  $bundles = \Drupal::config('web_push_notification.settings')->get('bundles');
+  $bundle = $entity->bundle();
+  if (isset($bundles[$bundle]) && $bundles[$bundle]) {
+    /** @var \Drupal\web_push_notification\NotificationQueue $sender */
+    $sender = \Drupal::service('web_push_notification.queue');
     $sender->start($entity);
   }
 }

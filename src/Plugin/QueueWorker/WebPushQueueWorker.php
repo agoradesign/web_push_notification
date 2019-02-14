@@ -5,7 +5,6 @@ namespace Drupal\web_push_notification\Plugin\QueueWorker;
 use Drupal\Core\Annotation\QueueWorker;
 use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Queue\QueueWorkerBase;
-use Drupal\web_push_notification\NotificationItem;
 
 /**
  * @QueueWorker(
@@ -21,7 +20,7 @@ class WebPushQueueWorker extends QueueWorkerBase {
   public function processItem($data) {
     /** @var \Drupal\web_push_notification\WebPushSender $sender */
     $sender = \Drupal::service('web_push_notification.sender');
-    $sender->send($data->data);
+    $sender->send($data);
   }
 
 }

@@ -32,6 +32,9 @@ class TestNotification extends FormBase {
     $this->queue = $queue;
   }
 
+  /**
+   * {@inheritdoc}
+   */
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('web_push_notification.keys_helper'),
@@ -120,7 +123,7 @@ class TestNotification extends FormBase {
 
     while ($unprocessed = $queue->claimItem()) {
       try {
-        $worker->processItem($unprocessed);
+        $worker->processItem($unprocessed->data);
         $queue->deleteItem($unprocessed);
       }
       catch (SuspendQueueException $e) {

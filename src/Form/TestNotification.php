@@ -20,10 +20,18 @@ class TestNotification extends FormBase {
    */
   protected $keysHelper;
 
+  /**
+   * @var \Drupal\web_push_notification\NotificationQueue
+   */
   protected $queue;
 
   /**
    * Constructs a new TestNotification object.
+   *
+   * @param \Drupal\web_push_notification\KeysHelper $keys_helper
+   *  The keys helper service.
+   * @param \Drupal\web_push_notification\NotificationQueue $queue
+   *  The notification queue service.
    */
   public function __construct(KeysHelper $keys_helper, NotificationQueue $queue) {
     $this->keysHelper = $keys_helper;
@@ -44,7 +52,7 @@ class TestNotification extends FormBase {
    * {@inheritdoc}
    */
   public function getFormId() {
-    return 'test_notification';
+    return 'web_push_notification_test';
   }
 
   /**

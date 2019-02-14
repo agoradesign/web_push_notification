@@ -5,10 +5,8 @@ namespace Drupal\web_push_notification\Form;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Queue\SuspendQueueException;
-use Drupal\node\Entity\Node;
 use Drupal\web_push_notification\NotificationItem;
 use Drupal\web_push_notification\NotificationQueue;
-use Drupal\web_push_notification\WebPushSender;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 use Drupal\web_push_notification\KeysHelper;
 

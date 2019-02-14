@@ -24,37 +24,36 @@
 
     attach: function (context, settings) {
 
-      if ('serviceWorker' in navigator) {
+      $('body').once('web_push_notification').each(function () {
+        if (!('serviceWorker' in navigator)) {
+          return;
+        }
         navigator
           .serviceWorker
           .register(settings.webPushNotification.serviceWorkerUrl)
           .then(function (registration) {
 
             return registration.pushManager.getSubscription()
-              .then(function (subscription) {
+                .then(function (subscription) {
 
-                if (subscription) {
-                  return;
-                }
+                  if (subscription) {
+                    return subscription;
+                  }
 
-                var publicKey = settings.webPushNotification.publicKey;
-                var vapidKey = urlBase64ToUint8Array(publicKey);
+                  var publicKey = settings.webPushNotification.publicKey;
+                  var vapidKey = urlBase64ToUint8Array(publicKey);
 
-                return registration.pushManager.subscribe({
-                  userVisibleOnly: true,
-                  applicationServerKey: vapidKey
-                })
+                  return registration.pushManager.subscribe({
+                    userVisibleOnly: true,
+                    applicationServerKey: vapidKey
+                  })
 
-              });
+                });
           })
           .then(function (subscription) {
-            if (!subscription) {
-              return;
-            }
 
             var key = subscription.getKey('p256dh');
             var token = subscription.getKey('auth');
-
 
             $.post(settings.webPushNotification.subscribeUrl, {
               key: key ? btoa(String.fromCharCode.apply(null, new Uint8Array(key))) : null,
@@ -63,9 +62,9 @@
             });
 
           });
-      }
+      });
 
-    }
+    } // attach
 
   }
 

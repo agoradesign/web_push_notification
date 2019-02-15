@@ -137,6 +137,8 @@ class TestNotification extends FormBase {
     $item->icon = $form_state->getValue('icon');
     $item->url = $form_state->getValue('url');
 
+    // TODO: make a batch process.
+
     $this->queue->startWithItem($item);
     $queue = $this->queue->getQueue();
     /** @var \Drupal\Core\Queue\QueueWorkerManager $worker */

@@ -1,0 +1,34 @@
+{
+  "name": "fxclub/web_push_notification",
+  "description": "Sends browser push notifications to users.",
+  "type": "drupal-module-custom",
+  "license": [
+    "proprietary"
+  ],
+  "keywords": [
+    "drupal8",
+    "module",
+    "web push",
+    "notifications",
+    "push notifications",
+    "browser push notifications"
+  ],
+  "require": {
+    "php" : "^7.1",
+    "drupal/core": "^8.6.1",
+    "minishlink/web-push": "^5.1"
+  },
+  "require-dev": {
+    "phpunit/phpunit": "5.*"
+  },
+  "authors": [
+    {
+      "name": "ForexClub",
+      "homepage": "https://www.fxclub.org"
+    },
+    {
+      "name": "Oleksii Skorobogatko",
+      "homepage": "https://www.soft-industry.com"
+    }
+  ]
+}

@@ -1,6 +1,6 @@
 name: Web Push Notification
 type: module
-description: Implements browser web push notifications.
+description: Sends browser push notifications to users.
 package: Web services
 core: 8.x
 configure: web_push_notification.settings

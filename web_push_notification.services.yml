@@ -9,8 +9,11 @@ services:
 
   web_push_notification.sender:
     class: Drupal\web_push_notification\WebPushSender
-    arguments: ['@web_push_notification.keys_helper', '@web_push_notification.purge']
+    arguments: ['@web_push_notification.keys_helper', '@web_push_notification.purge', '@config.factory']
 
   web_push_notification.purge:
     class: Drupal\web_push_notification\SubscriptionPurge
     arguments: ['@entity_type.manager']
+
+  web_push_notification.ttl:
+    class: Drupal\web_push_notification\TTL

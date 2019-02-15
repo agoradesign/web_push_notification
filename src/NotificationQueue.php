@@ -5,7 +5,6 @@ namespace Drupal\web_push_notification;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\Url;
 use Drupal\file\Plugin\Field\FieldType\FileFieldItemList;
 use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\field\FieldPluginBase;

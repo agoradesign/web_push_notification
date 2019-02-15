@@ -2,6 +2,7 @@
 
 namespace Drupal\web_push_notification;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\web_push_notification\Entity\Subscription;
 use Minishlink\WebPush\WebPush;
 use Minishlink\WebPush\Subscription as PushSubscription;
@@ -29,16 +30,26 @@ class WebPushSender implements WebPushSenderInterface {
   protected $purge;
 
   /**
+   * The web_push_notification config object.
+   *
+   * @var \Drupal\Core\Config\Config
+   */
+  protected $config;
+
+  /**
    * WebPushSender constructor.
    *
    * @param \Drupal\web_push_notification\KeysHelper $keysHelper
    *   The keys helper service.
    * @param \Drupal\web_push_notification\SubscriptionPurge $purge
    *   The subscription purge service.
+   * @param ConfigFactoryInterface $config_factory
+   *   The config factory service.
    */
-  public function __construct(KeysHelper $keysHelper, SubscriptionPurge $purge) {
+  public function __construct(KeysHelper $keysHelper, SubscriptionPurge $purge, ConfigFactoryInterface $config_factory) {
     $this->keyHelper = $keysHelper;
     $this->purge = $purge;
+    $this->config = $config_factory->get('web_push_notification.settings');
   }
 
   /**
@@ -53,7 +64,8 @@ class WebPushSender implements WebPushSenderInterface {
   public function getWebPush(): WebPush {
     if (!$this->webPush) {
       $auth = $this->keyHelper->getVapidAuth();
-      $this->webPush = new WebPush($auth);
+      $options = $this->getPushOptions();
+      $this->webPush = new WebPush($auth, $options);
     }
     return $this->webPush;
   }
@@ -80,6 +92,21 @@ class WebPushSender implements WebPushSenderInterface {
     if (is_array($results)) {
       $this->purge->delete($results);
     }
+  }
+
+  /**
+   * Gets the default push options.
+   *
+   * @return array
+   *   The list of options.
+   *
+   * @see https://github.com/web-push-libs/web-push-php#notifications-and-default-options
+   */
+  public function getPushOptions(): array {
+    return [
+      'TTL' => $this->config->get('push_ttl') ?: 100,
+      'urgency' => 'normal',
+    ];
   }
 
   /**

@@ -2,6 +2,7 @@
 
 namespace Drupal\web_push_notification\Form;
 
+use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Queue\SuspendQueueException;
@@ -26,16 +27,26 @@ class TestNotification extends FormBase {
   protected $queue;
 
   /**
+   * The web_push_notification config object.
+   *
+   * @var \Drupal\Core\Config\Config
+   */
+  protected $config;
+
+  /**
    * Constructs a new TestNotification object.
    *
    * @param \Drupal\web_push_notification\KeysHelper $keys_helper
-   *  The keys helper service.
+   *   The keys helper service.
    * @param \Drupal\web_push_notification\NotificationQueue $queue
-   *  The notification queue service.
+   *   The notification queue service.
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory service.
    */
-  public function __construct(KeysHelper $keys_helper, NotificationQueue $queue) {
+  public function __construct(KeysHelper $keys_helper, NotificationQueue $queue, ConfigFactoryInterface $config_factory) {
     $this->keysHelper = $keys_helper;
     $this->queue = $queue;
+    $this->config = $config_factory->get('web_push_notification.settings');
   }
 
   /**
@@ -44,7 +55,8 @@ class TestNotification extends FormBase {
   public static function create(ContainerInterface $container) {
     return new static(
       $container->get('web_push_notification.keys_helper'),
-      $container->get('web_push_notification.queue')
+      $container->get('web_push_notification.queue'),
+      $container->get('config.factory')
     );
   }
 
@@ -77,6 +89,9 @@ class TestNotification extends FormBase {
     $form['test']['body'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Message'),
+      '#description' => $this->t('Keep in mind, the message will be trimmed to %chars characters.', [
+        '%chars' => $this->config->get('body_length') ?: 100,
+      ]),
       '#weight' => '0',
       '#required' => TRUE,
     ];

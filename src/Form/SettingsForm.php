@@ -172,6 +172,12 @@ class SettingsForm extends ConfigFormBase {
       ]),
       '#default_value' => $config->get('pages') ?? '/admin/*',
     ];
+    $form['config']['body_length'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Max body length'),
+      '#description' => $this->t('Before sending a notification html tags will be deleted and the body field trimmed to the specified length.'),
+      '#default_value' => $config->get('body_length') ?? 100,
+    ];
 
     return $form;
   }
@@ -180,9 +186,13 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
-    $qbs = $form_state->getValue('queue_batch_size');
-    if (!($qbs >= 1 && $qbs <= 1000)) {
+    $val = $form_state->getValue('queue_batch_size');
+    if (!($val >= 1 && $val <= 1000)) {
       $form_state->setErrorByName('queue_batch_size', $this->t('Queue batch size must be in range 1..1000 inclusively.'));
+    }
+    $val = $form_state->getValue('body_length');
+    if (!($val >= 10 && $val <= 1000)) {
+      $form_state->setErrorByName('body_length', $this->t('Body length must be in range 10..100 inclusively.'));
     }
   }
 
@@ -200,6 +210,7 @@ class SettingsForm extends ConfigFormBase {
 
     $config
       ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
+      ->set('body_length', $form_state->getValue('body_length'))
       ->set('pages', $form_state->getValue('pages'))
       ->set('bundles', $form_state->getValue('bundles'))
       ->save();

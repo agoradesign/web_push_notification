@@ -5,6 +5,7 @@ namespace Drupal\web_push_notification;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
+use Drupal\Core\Queue\QueueInterface;
 use Drupal\file\Plugin\Field\FieldType\FileFieldItemList;
 use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
@@ -47,6 +48,16 @@ class NotificationQueue {
     $this->queue = $queueFactory->get('web_push_queue');
     $this->entityManager = $entityManager;
     $this->config = $config_factory->get('web_push_notification.settings');
+  }
+
+  /**
+   * Returns a notification queue.
+   *
+   * @return \Drupal\Core\Queue\QueueInterface
+   *   The notification queue.
+   */
+  public function getQueue(): QueueInterface {
+    return $this->queue;
   }
 
   /**

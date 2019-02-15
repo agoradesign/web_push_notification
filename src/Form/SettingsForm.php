@@ -218,7 +218,7 @@ class SettingsForm extends ConfigFormBase {
 
     // Validate the 'push ttl' parameter.
     $val = $form_state->getValue('push_ttl');
-    if ($this->ttl->validate($val)) {
+    if (!$this->ttl->validate($val)) {
       $form_state->setErrorByName('push_ttl', $this->t('Incorrent TTL value.'));
     }
   }
@@ -238,7 +238,7 @@ class SettingsForm extends ConfigFormBase {
     $config
       ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
       ->set('body_length', $form_state->getValue('body_length'))
-      ->set('push_ttl', $this->ttl->toMinutes($form_state->getValue('push_ttl')))
+      ->set('push_ttl', $form_state->getValue('push_ttl'))
       ->set('pages', $form_state->getValue('pages'))
       ->set('bundles', $form_state->getValue('bundles'))
       ->save();

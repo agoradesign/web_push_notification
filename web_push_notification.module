@@ -59,3 +59,26 @@ function web_push_notification_entity_insert(EntityInterface $entity) {
     $sender->start($entity);
   }
 }
+
+/**
+ * Implements hook_cron().
+ */
+function web_push_notification_cron() {
+  $queue = \Drupal::queue('web_push_queue');
+
+  /** @var \Drupal\web_push_notification\Plugin\QueueWorker\WebPushQueueWorker $worker */
+  $worker = Drupal::service('plugin.manager.queue_worker')
+    ->createInstance('web_push_queue');
+
+  // Process queue items during only specified amount of time.
+  $finish = strtotime('+ 5 min');
+  while (time() < $finish && ($item = $queue->claimItem())) {
+    try {
+      $worker->processItem($item->data);
+      $queue->deleteItem($item);
+    }
+    catch (\Exception $e) {
+      // TODO: log.
+    }
+  }
+}

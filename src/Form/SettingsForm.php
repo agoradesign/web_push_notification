@@ -8,6 +8,7 @@ use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Url;
 use Drupal\web_push_notification\KeysHelper;
+use Drupal\web_push_notification\TTL;
 use Symfony\Component\DependencyInjection\ContainerInterface;
 
 /**
@@ -28,6 +29,13 @@ class SettingsForm extends ConfigFormBase {
   protected $bundleInfo;
 
   /**
+   * The Web Push TTL converter.
+   *
+   * @var TTL
+   */
+  protected $ttl;
+
+  /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -36,11 +44,14 @@ class SettingsForm extends ConfigFormBase {
    *   The push keys helper service.
    * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info
    *   The entity type bundle info service.
+   * @param \Drupal\web_push_notification\TTL $ttl
+   *   The web push TTL converter.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, KeysHelper $keys_helper, EntityTypeBundleInfoInterface $bundle_info) {
+  public function __construct(ConfigFactoryInterface $config_factory, KeysHelper $keys_helper, EntityTypeBundleInfoInterface $bundle_info, TTL $ttl) {
     parent::__construct($config_factory);
     $this->keysHelper = $keys_helper;
     $this->bundleInfo = $bundle_info;
+    $this->ttl = $ttl;
   }
 
   /**
@@ -50,7 +61,8 @@ class SettingsForm extends ConfigFormBase {
     return new static(
       $container->get('config.factory'),
       $container->get('web_push_notification.keys_helper'),
-      $container->get('entity_type.bundle.info')
+      $container->get('entity_type.bundle.info'),
+      $container->get('web_push_notification.ttl')
     );
   }
 
@@ -156,11 +168,17 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'fieldset',
       '#title' => $this->t('Configuration'),
     ];
+    $form['config']['push_ttl'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Push TTL'),
+      '#description' => $this->t('TTL is how long a push message is retained by the push service in case the user browser is not yet accessible. You may want to use a very long time for important notifications. Notifications with TTL equals 0 will be delivered only if the user is currently connected. Please use the following modificator: "h" for hours, "d" for days, default value is minutes.'),
+      '#default_value' => $config->get('push_ttl') ?: '30m',
+    ];
     $form['config']['queue_batch_size'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Queue batch size'),
       '#description' => $this->t('How many number of notifications to send during the queue process.'),
-      '#default_value' => $config->get('queue_batch_size') ?? 100,
+      '#default_value' => $config->get('queue_batch_size') ?: 100,
       '#required' => TRUE,
     ];
     $form['config']['pages'] = [
@@ -170,13 +188,13 @@ class SettingsForm extends ConfigFormBase {
         '%user-wildcard' => '/user/*',
         '%front' => '<front>',
       ]),
-      '#default_value' => $config->get('pages') ?? '/admin/*',
+      '#default_value' => $config->get('pages') ?: '/admin/*',
     ];
     $form['config']['body_length'] = [
       '#type' => 'textfield',
       '#title' => $this->t('Max body length'),
       '#description' => $this->t('Before sending a notification html tags will be deleted and the body field trimmed to the specified length.'),
-      '#default_value' => $config->get('body_length') ?? 100,
+      '#default_value' => $config->get('body_length') ?: 100,
     ];
 
     return $form;
@@ -186,13 +204,22 @@ class SettingsForm extends ConfigFormBase {
    * {@inheritdoc}
    */
   public function validateForm(array &$form, FormStateInterface $form_state) {
+    // Validate the 'batch size' parameter.
     $val = $form_state->getValue('queue_batch_size');
     if (!($val >= 1 && $val <= 1000)) {
       $form_state->setErrorByName('queue_batch_size', $this->t('Queue batch size must be in range 1..1000 inclusively.'));
     }
+
+    // Validate the 'body length' parameter.
     $val = $form_state->getValue('body_length');
     if (!($val >= 10 && $val <= 1000)) {
       $form_state->setErrorByName('body_length', $this->t('Body length must be in range 10..100 inclusively.'));
+    }
+
+    // Validate the 'push ttl' parameter.
+    $val = $form_state->getValue('push_ttl');
+    if ($this->ttl->validate($val)) {
+      $form_state->setErrorByName('push_ttl', $this->t('Incorrent TTL value.'));
     }
   }
 
@@ -211,6 +238,7 @@ class SettingsForm extends ConfigFormBase {
     $config
       ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
       ->set('body_length', $form_state->getValue('body_length'))
+      ->set('push_ttl', $this->ttl->toMinutes($form_state->getValue('push_ttl')))
       ->set('pages', $form_state->getValue('pages'))
       ->set('bundles', $form_state->getValue('bundles'))
       ->save();

@@ -37,6 +37,13 @@ class WebPushSender implements WebPushSenderInterface {
   protected $config;
 
   /**
+   * The TTL converter.
+   *
+   * @var \Drupal\web_push_notification\TTL
+   */
+  protected $ttl;
+
+  /**
    * WebPushSender constructor.
    *
    * @param \Drupal\web_push_notification\KeysHelper $keysHelper
@@ -45,11 +52,14 @@ class WebPushSender implements WebPushSenderInterface {
    *   The subscription purge service.
    * @param ConfigFactoryInterface $config_factory
    *   The config factory service.
+   * @param \Drupal\web_push_notification\TTL $ttl
+   *   The TTL converter.
    */
-  public function __construct(KeysHelper $keysHelper, SubscriptionPurge $purge, ConfigFactoryInterface $config_factory) {
+  public function __construct(KeysHelper $keysHelper, SubscriptionPurge $purge, ConfigFactoryInterface $config_factory, TTL $ttl) {
     $this->keyHelper = $keysHelper;
     $this->purge = $purge;
     $this->config = $config_factory->get('web_push_notification.settings');
+    $this->ttl = $ttl;
   }
 
   /**
@@ -88,9 +98,9 @@ class WebPushSender implements WebPushSenderInterface {
     foreach ($subscriptions as $subscription) {
       $webPush->sendNotification($subscription['subscription'], $subscription['payload']);
     }
-    $results = $webPush->flush(count($subscriptions));
-    if (is_array($results)) {
-      $this->purge->delete($results);
+    /** @var \Minishlink\WebPush\MessageSentReport $report */
+    foreach ($webPush->flush(count($subscriptions)) as $report) {
+      $this->purge->delete($report);
     }
   }
 
@@ -100,11 +110,14 @@ class WebPushSender implements WebPushSenderInterface {
    * @return array
    *   The list of options.
    *
+   * @throws \Drupal\web_push_notification\InvalidTTLException
+   *
    * @see https://github.com/web-push-libs/web-push-php#notifications-and-default-options
    */
   public function getPushOptions(): array {
+    $ttl = $this->config->get('push_ttl') ?: 100;
     return [
-      'TTL' => $this->config->get('push_ttl') ?: 100,
+      'TTL' => $this->ttl->toMinutes($ttl),
       'urgency' => 'normal',
     ];
   }

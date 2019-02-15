@@ -4,6 +4,7 @@ namespace Drupal\web_push_notification;
 
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Minishlink\WebPush\MessageSentReport;
 
 /**
  * This service deletes subscriptions that 'rejected' during web push send.
@@ -36,12 +37,15 @@ class SubscriptionPurge {
    *
    * @see \Minishlink\WebPush\WebPush::flush()
    */
-  public function delete(array $statuses) {
-    foreach ($statuses as $status) {
-      if ($this->isRejected($status)) {
-        $this->deleteSubscription($status['endpoint']->__toString());
-      }
+  public function delete(MessageSentReport $report) {
+    if (!$report->isSuccess()) {
+      $this->deleteSubscription($report->getEndpoint());
     }
+//    foreach ($statuses as $status) {
+//      if ($this->isRejected($status)) {
+//        $this->deleteSubscription($status['endpoint']->__toString());
+//      }
+//    }
   }
 
   /**

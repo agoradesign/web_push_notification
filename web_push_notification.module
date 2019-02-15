@@ -10,6 +10,8 @@ use Drupal\Core\Entity\EntityInterface;
 
 /**
  * Implements hook_page_attachments_alter().
+ *
+ * Attaches register service worker script on a page.
  */
 function web_push_notification_page_attachments_alter(array &$attachments) {
   $public_key = Drupal::config('web_push_notification.settings')->get('public_key');

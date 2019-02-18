@@ -28,6 +28,7 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
     'subscribeUrl' => Url::fromRoute('web_push_notification.subscribe', [], $url_options)->toString(),
   ];
 
+  // Check pages on which service worker should work.
   $pages = \Drupal::config('web_push_notification.settings')->get('pages');
   if ($pages) {
     $pages = mb_strtolower($pages);
@@ -51,6 +52,9 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
 
 /**
  * Implements hook_entity_insert().
+ *
+ * Send a notification when a new content is inserted (the content type
+ * should be enabled in the module settings).
  */
 function web_push_notification_entity_insert(EntityInterface $entity) {
   $bundles = \Drupal::config('web_push_notification.settings')->get('bundles');
@@ -64,6 +68,8 @@ function web_push_notification_entity_insert(EntityInterface $entity) {
 
 /**
  * Implements hook_cron().
+ *
+ * Process a notification queue by cron.
  */
 function web_push_notification_cron() {
   $queue = \Drupal::queue('web_push_queue');

@@ -32,7 +32,7 @@ class SubscriptionPurge {
   /**
    * Deletes subscriptions whose notification response status isn't success.
    *
-   * @param array $statuses
+   * @param \Minishlink\WebPush\MessageSentReport $report
    *   The notification statuses list.
    *
    * @see \Minishlink\WebPush\WebPush::flush()
@@ -41,24 +41,6 @@ class SubscriptionPurge {
     if (!$report->isSuccess()) {
       $this->deleteSubscription($report->getEndpoint());
     }
-//    foreach ($statuses as $status) {
-//      if ($this->isRejected($status)) {
-//        $this->deleteSubscription($status['endpoint']->__toString());
-//      }
-//    }
-  }
-
-  /**
-   * Has a notification status 'rejected'.
-   *
-   * @param array $status
-   *   The notification status item.
-   *
-   * @return bool
-   *   Rejected or not.
-   */
-  public function isRejected(array $status): bool {
-    return isset($status['success']) && $status['success'] === false;
   }
 
   /**

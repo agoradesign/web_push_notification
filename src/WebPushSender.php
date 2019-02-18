@@ -70,6 +70,7 @@ class WebPushSender implements WebPushSenderInterface {
    *
    * @throws \Drupal\web_push_notification\AuthKeysException
    * @throws \ErrorException
+   * @throws \Drupal\web_push_notification\InvalidTTLException
    */
   public function getWebPush(): WebPush {
     if (!$this->webPush) {
@@ -88,6 +89,7 @@ class WebPushSender implements WebPushSenderInterface {
    *
    * @throws \Drupal\web_push_notification\AuthKeysException
    * @throws \ErrorException
+   * @throws \Drupal\web_push_notification\InvalidTTLException
    */
   public function send(NotificationItem $item) {
     if (empty($item->ids)) {

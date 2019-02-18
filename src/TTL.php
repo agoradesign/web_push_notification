@@ -7,6 +7,12 @@ namespace Drupal\web_push_notification;
  */
 class TTL {
 
+  /**
+   * TTL pattern.
+   * Accepts plain number value it's treated as minutes.
+   * Suffix 'h' is treated as hours.
+   * Suffix 'd' is treated as days.
+   */
   const PATTERN = '/^([0-9]+)([hd]{1})?$/';
 
   /**

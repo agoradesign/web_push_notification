@@ -37,3 +37,10 @@ web_push_notification.subscribe:
   requirements:
     _access: 'TRUE'
 
+web_push_notification.clear_subscribe:
+  path: '/admin/config/services/web-push-notification/subscriptions/clear'
+  defaults:
+    _title: 'Clear push notification subscribers'
+    _form: '\Drupal\web_push_notification\Form\ConfirmClearSubscribers'
+  requirements:
+    _permission: 'administer web push notification subscriptions'

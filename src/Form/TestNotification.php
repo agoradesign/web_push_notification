@@ -3,6 +3,7 @@
 namespace Drupal\web_push_notification\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Queue\SuspendQueueException;
@@ -34,6 +35,13 @@ class TestNotification extends FormBase {
   protected $config;
 
   /**
+   * The subscription entity storage.
+   *
+   * @var \Drupal\Core\Entity\EntityStorageInterface
+   */
+  protected $storage;
+
+  /**
    * Constructs a new TestNotification object.
    *
    * @param \Drupal\web_push_notification\KeysHelper $keys_helper
@@ -42,11 +50,22 @@ class TestNotification extends FormBase {
    *   The notification queue service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
+   * @param EntityTypeManagerInterface $entity_type
+   *   The entity type manager.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public function __construct(KeysHelper $keys_helper, NotificationQueue $queue, ConfigFactoryInterface $config_factory) {
+  public function __construct(
+      KeysHelper $keys_helper,
+      NotificationQueue $queue,
+      ConfigFactoryInterface $config_factory,
+      EntityTypeManagerInterface $entity_type
+  ) {
     $this->keysHelper = $keys_helper;
     $this->queue = $queue;
     $this->config = $config_factory->get('web_push_notification.settings');
+    $this->storage = $entity_type->getStorage('wpn_subscription');
   }
 
   /**
@@ -56,7 +75,8 @@ class TestNotification extends FormBase {
     return new static(
       $container->get('web_push_notification.keys_helper'),
       $container->get('web_push_notification.queue'),
-      $container->get('config.factory')
+      $container->get('config.factory'),
+      $container->get('entity_type.manager')
     );
   }
 
@@ -71,8 +91,11 @@ class TestNotification extends FormBase {
    * {@inheritdoc}
    */
   public function buildForm(array $form, FormStateInterface $form_state) {
-
-    // TODO: check that the subscribed list isn't empty!
+    $count = $this->storage->getQuery()->count()->execute();
+    if ($count == 0) {
+      $this->messenger()->addWarning($this->t('No subscriptions found.'));
+      return $form;
+    }
 
     $form['test'] = [
       '#type' => 'fieldset',

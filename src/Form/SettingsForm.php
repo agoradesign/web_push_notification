@@ -188,7 +188,7 @@ class SettingsForm extends ConfigFormBase {
         '%user-wildcard' => '/user/*',
         '%front' => '<front>',
       ]),
-      '#default_value' => $config->get('pages') ?: '/admin/*',
+      '#default_value' => $config->get('pages'),
     ];
     $form['config']['body_length'] = [
       '#type' => 'textfield',

@@ -126,7 +126,7 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
       ->setLabel(t('Endpoint'))
       ->setDescription(t('Communication endpoint.'))
       ->setSettings([
-        'max_length' => 1024,
+        'max_length' => 512,
       ])
       ->setRequired(TRUE);
 

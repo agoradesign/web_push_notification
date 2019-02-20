@@ -3,6 +3,8 @@ web_push_notification.settings:
   defaults:
     _title: 'Web push notification settings'
     _form: 'Drupal\web_push_notification\Form\SettingsForm'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer web push notification settings'
 
@@ -11,6 +13,8 @@ web_push_notification.bundle_configure:
   defaults:
     _title: 'Content type configuration'
     _form: 'Drupal\web_push_notification\Form\BundleConfigForm'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer web push notification settings'
 
@@ -42,5 +46,7 @@ web_push_notification.clear_subscribe:
   defaults:
     _title: 'Clear push notification subscribers'
     _form: '\Drupal\web_push_notification\Form\ConfirmClearSubscribers'
+  options:
+    _admin_route: TRUE
   requirements:
     _permission: 'administer web push notification subscriptions'

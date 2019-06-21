@@ -1,5 +1,5 @@
 {
-  "name": "fxclub/web_push_notification",
+  "name": "drupal/web_push_notification",
   "description": "Sends browser push notifications to users.",
   "type": "drupal-module-custom",
   "license": [
@@ -22,10 +22,6 @@
     "phpunit/phpunit": "5.*"
   },
   "authors": [
-    {
-      "name": "ForexClub",
-      "homepage": "https://www.fxclub.org"
-    },
     {
       "name": "Oleksii Skorobogatko",
       "homepage": "https://www.soft-industry.com"

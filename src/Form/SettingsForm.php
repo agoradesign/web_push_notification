@@ -144,8 +144,9 @@ class SettingsForm extends ConfigFormBase {
       '#type' => 'details',
       '#open' => TRUE,
       '#title' => $this->t('Content types'),
+      '#description' => $this->t('Posting a new content of the enabled type will send a notification.'),
     ];
-    $form['content'] = $this->buildBundlesForm();
+    $form['content']['bundles'] = $this->buildBundlesForm();
 
     $form['config'] = [
       '#type' => 'details',
@@ -168,7 +169,7 @@ class SettingsForm extends ConfigFormBase {
     $form['config']['pages'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Pages'),
-      '#description' => $this->t("Specify pages by using their paths. Enter one path per line. The '*' character is a wildcard. An example path is %user-wildcard for every user page. %front is the front page.", [
+      '#description' => $this->t("Specify page paths where no notifications will be. Enter one path per line. The '*' character is a wildcard. An example path is %user-wildcard for every user page. %front is the front page.", [
         '%user-wildcard' => '/user/*',
         '%front' => '<front>',
       ]),
@@ -190,7 +191,7 @@ class SettingsForm extends ConfigFormBase {
    * @return array
    */
   protected function buildBundlesForm() {
-    $form['bundles'] = [
+    $form = [
       '#type' => 'table',
       '#tableselect' => TRUE,
       '#default_value' => [],
@@ -210,7 +211,7 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('web_push_notification.settings');
 
     foreach ($this->getNodeBundles() as $id => $info) {
-      $form['bundles'][$id] = [
+      $form[$id] = [
         'bundle' => [
           '#markup' => $info['label'],
         ],
@@ -227,7 +228,7 @@ class SettingsForm extends ConfigFormBase {
           ],
         ],
       ];
-      $form['bundles']['#default_value'][$id] = $config->get("bundles.$id");
+      $form['#default_value'][$id] = $config->get("bundles.$id");
     }
 
     return $form;

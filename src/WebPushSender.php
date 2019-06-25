@@ -50,12 +50,17 @@ class WebPushSender implements WebPushSenderInterface {
    *   The keys helper service.
    * @param \Drupal\web_push_notification\SubscriptionPurge $purge
    *   The subscription purge service.
-   * @param ConfigFactoryInterface $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
    * @param \Drupal\web_push_notification\TTL $ttl
    *   The TTL converter.
    */
-  public function __construct(KeysHelper $keysHelper, SubscriptionPurge $purge, ConfigFactoryInterface $config_factory, TTL $ttl) {
+  public function __construct(
+    KeysHelper $keysHelper,
+    SubscriptionPurge $purge,
+    ConfigFactoryInterface $config_factory,
+    TTL $ttl
+  ) {
     $this->keyHelper = $keysHelper;
     $this->purge = $purge;
     $this->config = $config_factory->get('web_push_notification.settings');

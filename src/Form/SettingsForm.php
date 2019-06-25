@@ -130,42 +130,7 @@ class SettingsForm extends ConfigFormBase {
       '#open' => TRUE,
       '#title' => $this->t('Content types'),
     ];
-    $form['content']['bundles'] = [
-      '#type' => 'table',
-      '#tableselect' => TRUE,
-      '#default_value' => [],
-      '#header' => [
-        [
-          'data' => $this->t('Content type'),
-          'class' => ['bundle'],
-        ],
-        [
-          'data' => $this->t('Settings'),
-          'class' => ['operations'],
-        ],
-      ],
-      '#empty' => $this->t('No content types available.'),
-    ];
-    foreach ($this->getNodeBundles() as $id => $info) {
-      $form['content']['bundles'][$id] = [
-        'bundle' => [
-          '#markup' => $info['label'],
-        ],
-        'operations' => [
-          '#type' => 'operations',
-          '#links' => [
-            'configure' => [
-              'title' => $this->t('Configure'),
-              'url' => Url::fromRoute('web_push_notification.bundle_configure', [
-                'bundle' => $id,
-              ]),
-              'query' => \Drupal::destination()->getAsArray(),
-            ],
-          ],
-        ],
-      ];
-      $form['content']['bundles']['#default_value'][$id] = $config->get("bundles.$id");
-    }
+    $form['content'] = $this->buildBundlesForm();
 
     $form['config'] = [
       '#type' => 'details',
@@ -200,6 +165,55 @@ class SettingsForm extends ConfigFormBase {
       '#description' => $this->t('Before sending a notification html tags will be deleted and the body field trimmed to the specified length.'),
       '#default_value' => $config->get('body_length') ?: 100,
     ];
+
+    return $form;
+  }
+
+  /**
+   * Builds bundles form section.
+   *
+   * @return array
+   */
+  protected function buildBundlesForm() {
+    $form['bundles'] = [
+      '#type' => 'table',
+      '#tableselect' => TRUE,
+      '#default_value' => [],
+      '#header' => [
+        [
+          'data' => $this->t('Content type'),
+          'class' => ['bundle'],
+        ],
+        [
+          'data' => $this->t('Settings'),
+          'class' => ['operations'],
+        ],
+      ],
+      '#empty' => $this->t('No content types available.'),
+    ];
+
+    $config = $this->config('web_push_notification.settings');
+
+    foreach ($this->getNodeBundles() as $id => $info) {
+      $form['bundles'][$id] = [
+        'bundle' => [
+          '#markup' => $info['label'],
+        ],
+        'operations' => [
+          '#type' => 'operations',
+          '#links' => [
+            'configure' => [
+              'title' => $this->t('Configure'),
+              'url' => Url::fromRoute('web_push_notification.bundle_configure', [
+                'bundle' => $id,
+              ]),
+              'query' => \Drupal::destination()->getAsArray(),
+            ],
+          ],
+        ],
+      ];
+      $form['bundles']['#default_value'][$id] = $config->get("bundles.$id");
+    }
 
     return $form;
   }

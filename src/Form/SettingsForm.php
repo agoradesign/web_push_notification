@@ -100,7 +100,8 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('web_push_notification.settings');
 
     $form['auth'] = [
-      '#type' => 'fieldset',
+      '#type' => 'details',
+      '#open' => TRUE,
       '#title' => $this->t('Auth parameters'),
     ];
     $form['auth']['public_key'] = [
@@ -125,7 +126,9 @@ class SettingsForm extends ConfigFormBase {
     ];
 
     $form['content'] = [
-      '#type' => 'fieldset',
+      '#type' => 'details',
+      '#open' => TRUE,
+      '#title' => $this->t('Content types'),
     ];
     $form['content']['bundles'] = [
       '#type' => 'table',
@@ -165,7 +168,8 @@ class SettingsForm extends ConfigFormBase {
     }
 
     $form['config'] = [
-      '#type' => 'fieldset',
+      '#type' => 'details',
+      '#open' => TRUE,
       '#title' => $this->t('Configuration'),
     ];
     $form['config']['push_ttl'] = [

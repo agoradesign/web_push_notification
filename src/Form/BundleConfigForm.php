@@ -29,8 +29,17 @@ class BundleConfigForm extends ConfigFormBase {
    * BundleConfigForm constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
+   *   The config factory.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entity_field_manager
+   *   The entity field manager.
+   * @param \Drupal\Core\Entity\EntityTypeBundleInfoInterface $bundle_info
+   *   The entity type bundle info.
    */
-  public function __construct(ConfigFactoryInterface $config_factory, EntityFieldManagerInterface $entity_field_manager, EntityTypeBundleInfoInterface $bundle_info) {
+  public function __construct(
+    ConfigFactoryInterface $config_factory,
+    EntityFieldManagerInterface $entity_field_manager,
+    EntityTypeBundleInfoInterface $bundle_info
+  ) {
     parent::__construct($config_factory);
     $this->entityFieldManager = $entity_field_manager;
     $this->bundleInfo = $bundle_info;

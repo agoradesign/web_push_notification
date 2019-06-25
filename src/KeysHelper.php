@@ -52,6 +52,8 @@ class KeysHelper {
    *
    * @return array
    *   The list of two keys indexed by 'publicKey' and 'privateKey'.
+   *
+   * @throws \ErrorException
    */
   public function generateKeys(): array {
     return VAPID::createVapidKeys();

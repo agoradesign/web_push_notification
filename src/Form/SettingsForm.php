@@ -53,6 +53,7 @@ class SettingsForm extends ConfigFormBase {
    * @param \Drupal\web_push_notification\TTL $ttl
    *   The web push TTL converter.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirectDestination
+   *   The redirect destination.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,

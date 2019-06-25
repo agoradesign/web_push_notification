@@ -41,10 +41,14 @@ class NotificationQueue {
    *   The queue factory.
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityManager
    *   The entity manager service.
-   * @param ConfigFactoryInterface $config_factory
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
    */
-  public function __construct(QueueFactory $queueFactory, EntityTypeManagerInterface $entityManager, ConfigFactoryInterface $config_factory) {
+  public function __construct(
+    QueueFactory $queueFactory,
+    EntityTypeManagerInterface $entityManager,
+    ConfigFactoryInterface $config_factory
+  ) {
     $this->queue = $queueFactory->get('web_push_queue');
     $this->entityManager = $entityManager;
     $this->config = $config_factory->get('web_push_notification.settings');
@@ -65,6 +69,10 @@ class NotificationQueue {
    *
    * @param \Drupal\node\NodeInterface $entity
    *   The node entity.
+   *
+   * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
+   * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
+   * @throws \Drupal\Core\Entity\EntityMalformedException
    */
   public function start(NodeInterface $entity) {
     $bundle = $entity->bundle();

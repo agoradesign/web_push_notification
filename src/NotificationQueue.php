@@ -156,11 +156,11 @@ class NotificationQueue {
    *   A trimmed and filtered text.
    */
   protected function prepareBody(string $raw): string {
+    $body = strip_tags($raw);
     $body = FieldPluginBase::trimText([
       'max_length' => $this->config->get('body_length') ?: 100,
       'html' => FALSE,
-    ], $raw);
-    $body = strip_tags($raw);
+    ], $body);
     return $body;
   }
 

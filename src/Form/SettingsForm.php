@@ -6,6 +6,7 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Routing\RedirectDestinationInterface;
 use Drupal\Core\Url;
 use Drupal\web_push_notification\KeysHelper;
 use Drupal\web_push_notification\TTL;
@@ -31,9 +32,14 @@ class SettingsForm extends ConfigFormBase {
   /**
    * The Web Push TTL converter.
    *
-   * @var TTL
+   * @var \Drupal\web_push_notification\TTL
    */
   protected $ttl;
+
+  /**
+   * @var \Drupal\Core\Routing\RedirectDestinationInterface
+   */
+  protected $redirectDestination;
 
   /**
    * Constructs a \Drupal\system\ConfigFormBase object.
@@ -46,12 +52,20 @@ class SettingsForm extends ConfigFormBase {
    *   The entity type bundle info service.
    * @param \Drupal\web_push_notification\TTL $ttl
    *   The web push TTL converter.
+   * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirectDestination
    */
-  public function __construct(ConfigFactoryInterface $config_factory, KeysHelper $keys_helper, EntityTypeBundleInfoInterface $bundle_info, TTL $ttl) {
+  public function __construct(
+    ConfigFactoryInterface $config_factory,
+    KeysHelper $keys_helper,
+    EntityTypeBundleInfoInterface $bundle_info,
+    TTL $ttl,
+    RedirectDestinationInterface $redirectDestination
+  ) {
     parent::__construct($config_factory);
     $this->keysHelper = $keys_helper;
     $this->bundleInfo = $bundle_info;
     $this->ttl = $ttl;
+    $this->redirectDestination = $redirectDestination;
   }
 
   /**
@@ -62,7 +76,8 @@ class SettingsForm extends ConfigFormBase {
       $container->get('config.factory'),
       $container->get('web_push_notification.keys_helper'),
       $container->get('entity_type.bundle.info'),
-      $container->get('web_push_notification.ttl')
+      $container->get('web_push_notification.ttl'),
+      $container->get('redirect.destination')
     );
   }
 
@@ -207,7 +222,7 @@ class SettingsForm extends ConfigFormBase {
               'url' => Url::fromRoute('web_push_notification.bundle_configure', [
                 'bundle' => $id,
               ]),
-              'query' => \Drupal::destination()->getAsArray(),
+              'query' => $this->redirectDestination->getAsArray(),
             ],
           ],
         ],

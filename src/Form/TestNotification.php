@@ -6,11 +6,12 @@ use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
+use Drupal\Core\Queue\QueueWorkerManagerInterface;
 use Drupal\Core\Queue\SuspendQueueException;
+use Drupal\web_push_notification\KeysHelper;
 use Drupal\web_push_notification\NotificationItem;
 use Drupal\web_push_notification\NotificationQueue;
 use Symfony\Component\DependencyInjection\ContainerInterface;
-use Drupal\web_push_notification\KeysHelper;
 
 /**
  * Allows to send a test notification to subscribed users.
@@ -42,6 +43,13 @@ class TestNotification extends FormBase {
   protected $storage;
 
   /**
+   * The queue worker manager.
+   *
+   * @var \Drupal\Core\Queue\QueueWorkerManagerInterface
+   */
+  protected $queueWorkerManger;
+
+  /**
    * Constructs a new TestNotification object.
    *
    * @param \Drupal\web_push_notification\KeysHelper $keys_helper
@@ -50,8 +58,10 @@ class TestNotification extends FormBase {
    *   The notification queue service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
-   * @param EntityTypeManagerInterface $entity_type
+   * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entity_type
    *   The entity type manager.
+   * @param \Drupal\Core\Queue\QueueWorkerManagerInterface $queue_worker_manager
+   *   The queue worker manager.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
@@ -60,12 +70,14 @@ class TestNotification extends FormBase {
       KeysHelper $keys_helper,
       NotificationQueue $queue,
       ConfigFactoryInterface $config_factory,
-      EntityTypeManagerInterface $entity_type
+      EntityTypeManagerInterface $entity_type,
+      QueueWorkerManagerInterface $queue_worker_manager
   ) {
     $this->keysHelper = $keys_helper;
     $this->queue = $queue;
     $this->config = $config_factory->get('web_push_notification.settings');
     $this->storage = $entity_type->getStorage('wpn_subscription');
+    $this->queueWorkerManger = $queue_worker_manager;
   }
 
   /**
@@ -76,7 +88,8 @@ class TestNotification extends FormBase {
       $container->get('web_push_notification.keys_helper'),
       $container->get('web_push_notification.queue'),
       $container->get('config.factory'),
-      $container->get('entity_type.manager')
+      $container->get('entity_type.manager'),
+      $container->get('plugin.manager.queue_worker')
     );
   }
 
@@ -164,8 +177,7 @@ class TestNotification extends FormBase {
 
     $this->queue->startWithItem($item);
     $queue = $this->queue->getQueue();
-    /** @var \Drupal\Core\Queue\QueueWorkerManager $worker */
-    $worker = \Drupal::service('plugin.manager.queue_worker')->createInstance('web_push_queue');
+    $worker = $this->queueWorkerManger->createInstance('web_push_queue');
 
     while ($unprocessed = $queue->claimItem()) {
       try {

@@ -2,6 +2,8 @@
 
 namespace Drupal\web_push_notification;
 
+use Drupal\Component\Serialization\Json;
+
 /**
  * Notification queue item.
  */
@@ -58,7 +60,7 @@ class NotificationItem {
    *   A JSON encoded payload.
    */
   public function payload() {
-    return json_encode([
+    return JSON::encode([
       'title' => $this->title,
       'body' => $this->body,
       'url' => $this->url,

@@ -57,10 +57,10 @@ class SubscriptionPurge {
       return;
     }
 
-    // TODO: maybe it's better to use loadByProperties() ?
-    $entities = array_filter(array_map(function ($id) {
-      return $this->entityStorage->load($id);
-    }, $ids));
+    $entities = $this->entityStorage->loadMultiple($ids);
+    if (empty($entities)) {
+      return;
+    }
 
     try {
       $this->entityStorage->delete($entities);

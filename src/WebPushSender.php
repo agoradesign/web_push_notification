@@ -77,7 +77,7 @@ class WebPushSender implements WebPushSenderInterface {
    * @throws \ErrorException
    * @throws \Drupal\web_push_notification\InvalidTTLException
    */
-  public function getWebPush(): WebPush {
+  public function getWebPush() {
     if (!$this->webPush) {
       $auth = $this->keyHelper->getVapidAuth();
       $options = $this->getPushOptions();
@@ -121,7 +121,7 @@ class WebPushSender implements WebPushSenderInterface {
    *
    * @see https://github.com/web-push-libs/web-push-php#notifications-and-default-options
    */
-  public function getPushOptions(): array {
+  public function getPushOptions() {
     $ttl = $this->config->get('push_ttl') ?: 100;
     return [
       'TTL' => $this->ttl->toMinutes($ttl),
@@ -140,7 +140,7 @@ class WebPushSender implements WebPushSenderInterface {
    *
    * @throws \ErrorException
    */
-  protected function createSubscriptions(NotificationItem $item): array {
+  protected function createSubscriptions(NotificationItem $item) {
     $notifications = [];
     foreach ($item->ids as $subscription_id) {
       if (!($subscription = Subscription::load($subscription_id))) {

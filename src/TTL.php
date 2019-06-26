@@ -23,7 +23,7 @@ class TTL {
    *
    * @return bool
    */
-  public function validate(string $value): bool {
+  public function validate($value) {
     return preg_match(self::PATTERN, $value);
   }
 
@@ -38,7 +38,7 @@ class TTL {
    *
    * @throws \Drupal\web_push_notification\InvalidTTLException
    */
-  public function toMinutes(string $value): int {
+  public function toMinutes($value) {
     if (!$this->validate($value)) {
       throw new InvalidTTLException($value);
     }

@@ -5,7 +5,6 @@ namespace Drupal\web_push_notification;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Drupal\Core\Queue\QueueFactory;
-use Drupal\Core\Queue\QueueInterface;
 use Drupal\file\Plugin\Field\FieldType\FileFieldItemList;
 use Drupal\node\NodeInterface;
 use Drupal\views\Plugin\views\field\FieldPluginBase;
@@ -60,7 +59,7 @@ class NotificationQueue {
    * @return \Drupal\Core\Queue\QueueInterface
    *   The notification queue.
    */
-  public function getQueue(): QueueInterface {
+  public function getQueue() {
     return $this->queue;
   }
 
@@ -135,7 +134,7 @@ class NotificationQueue {
    * @return string
    *   An icon url.
    */
-  protected function getIconUrl($field): string {
+  protected function getIconUrl($field) {
     if ($field instanceof FileFieldItemList) {
       if (!($entities = $field->referencedEntities())) {
         return '';
@@ -155,7 +154,7 @@ class NotificationQueue {
    * @return string
    *   A trimmed and filtered text.
    */
-  protected function prepareBody(string $raw): string {
+  protected function prepareBody($raw) {
     $body = strip_tags($raw);
     $body = FieldPluginBase::trimText([
       'max_length' => $this->config->get('body_length') ?: 100,

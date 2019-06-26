@@ -146,7 +146,7 @@ class BundleConfigForm extends ConfigFormBase {
    * @return \Drupal\Core\Field\FieldDefinitionInterface[]
    *   The array of field definitions for the bundle, keyed by field name.
    */
-  protected function getBundleFields(string $bundle): array {
+  protected function getBundleFields($bundle) {
     return $this->entityFieldManager->getFieldDefinitions('node', $bundle);
   }
 
@@ -156,7 +156,7 @@ class BundleConfigForm extends ConfigFormBase {
    * @return array
    *   The list of node bundles.
    */
-  protected function getBundles(): array {
+  protected function getBundles() {
     return $this->bundleInfo->getBundleInfo('node');
   }
 

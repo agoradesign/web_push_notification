@@ -298,7 +298,7 @@ class SettingsForm extends ConfigFormBase {
    * @param string $privateKey
    *   The private key.
    */
-  protected function saveKeys(string $publicKey, string $privateKey) {
+  protected function saveKeys($publicKey, $privateKey) {
     $this->config('web_push_notification.settings')
       ->set('public_key', $publicKey)
       ->set('private_key', $privateKey)

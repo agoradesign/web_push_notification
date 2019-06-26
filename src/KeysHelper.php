@@ -22,6 +22,7 @@ class KeysHelper {
    * HelperService constructor.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config
+   *   The config factory.
    */
   public function __construct(ConfigFactoryInterface $config) {
     $this->config = $config->get(self::SETTINGS);
@@ -33,7 +34,7 @@ class KeysHelper {
    * @return string
    *   The public key.
    */
-  public function getPublicKey(): string {
+  public function getPublicKey() {
     return $this->config->get('public_key');
   }
 
@@ -43,7 +44,7 @@ class KeysHelper {
    * @return string
    *   The private key.
    */
-  public function getPrivateKey(): string {
+  public function getPrivateKey() {
     return $this->config->get('private_key');
   }
 
@@ -55,7 +56,7 @@ class KeysHelper {
    *
    * @throws \ErrorException
    */
-  public function generateKeys(): array {
+  public function generateKeys() {
     return VAPID::createVapidKeys();
   }
 
@@ -64,7 +65,7 @@ class KeysHelper {
    *
    * @return bool
    */
-  public function isKeysDefined(): bool {
+  public function isKeysDefined() {
     $public = $this->getPublicKey();
     $private = $this->getPublicKey();
     return $public && $private;
@@ -80,7 +81,7 @@ class KeysHelper {
    *
    * @return array
    */
-  public function getVapidAuth(): array {
+  public function getVapidAuth() {
     if (!$this->isKeysDefined()) {
       throw new AuthKeysException('Public, private keys must be defined.');
     }

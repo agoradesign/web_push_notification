@@ -46,7 +46,7 @@ class NotificationItem {
    * @param string $body
    *   The notification message (body).
    */
-  public function __construct(string $title = '', string $body = '') {
+  public function __construct($title = '', $body = '') {
     $this->title = $title;
     $this->body = $body;
   }
@@ -57,7 +57,7 @@ class NotificationItem {
    * @return string
    *   A JSON encoded payload.
    */
-  public function payload(): string {
+  public function payload() {
     return json_encode([
       'title' => $this->title,
       'body' => $this->body,

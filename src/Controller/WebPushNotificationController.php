@@ -10,7 +10,6 @@ use Symfony\Component\DependencyInjection\ContainerInterface;
 use Symfony\Component\HttpFoundation\BinaryFileResponse;
 use Symfony\Component\HttpFoundation\JsonResponse;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Component\HttpFoundation\Response;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
 use Symfony\Component\HttpKernel\Exception\NotFoundHttpException;
 use Symfony\Component\HttpKernel\Exception\ServiceUnavailableHttpException;
@@ -35,7 +34,7 @@ class WebPushNotificationController extends ControllerBase {
    *
    * @param \Drupal\Core\Extension\ModuleHandler $moduleHandler
    *   The module handler service.
-   * @param KeysHelper $keysHelper
+   * @param \Drupal\web_push_notification\KeysHelper $keysHelper
    *   The notification keys helper service.
    */
   public function __construct(ModuleHandler $moduleHandler, KeysHelper $keysHelper) {
@@ -59,7 +58,7 @@ class WebPushNotificationController extends ControllerBase {
    * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
    *  The service worker content.
    */
-  public function serviceWorker(): BinaryFileResponse {
+  public function serviceWorker() {
     $module_path = $this->moduleHandler->getModule('web_push_notification')->getPath();
     $uri = "{$module_path}/js/service_worker.js";
 
@@ -87,7 +86,7 @@ class WebPushNotificationController extends ControllerBase {
    *   When required parameter (key, token, endpoint) is missing.
    * @throws \Drupal\Core\Entity\EntityStorageException
    */
-  public function subscribe(Request $request): Response {
+  public function subscribe(Request $request) {
 
     // Cannot accept a user confirmation when push keys are empty.
     if (!$this->keysHelper->isKeysDefined()) {

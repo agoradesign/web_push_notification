@@ -49,7 +49,7 @@ class SubscriptionPurge {
    * @param string $endpoint
    *   The subscription endpoint.
    */
-  protected function deleteSubscription(string $endpoint) {
+  protected function deleteSubscription($endpoint) {
     $ids = $this->entityStorage->getQuery()
       ->condition('endpoint', $endpoint)
       ->execute();

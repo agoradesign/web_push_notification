@@ -49,8 +49,21 @@ After the module is installed open its configuration page (admin/config/services
 and generate keys by pressing the "Regenerate keys" button.
 Clear the cache and open the front page as an anonymous user. The browser will popup a dialog for subscribing
 for the notifications. Accept it. In the configuration page on the "Subscriptions" tab you should see
-a new subscriber. Go to "Test" tab, fill mandatory "Title" and "Message" field and send a test message.
+a new subscriber. Go to "Test" tab, fill mandatory "Title" and "Message" fields and send a test message.
+
+CONTENT NOTIFICATION
+--------------------
 
 If you want to notify about specific content (for example, a news is added) you should choose on
 the configuration page which content type will be processed. Also, you can choose which fields of the
-specified content type to use for the description and the image in a notification.
+specified content type to use for the description and the image in a notification banner.
+
+After the content is added the 'web_push_queue' queue will be created. You may process that queue
+by the 'drush' command:
+
+<code>
+    drush queue:run web_push_queue
+</code>
+
+You can insert the above command in your system cron and invoke it, every 5 - 10 min.
+

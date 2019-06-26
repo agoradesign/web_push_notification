@@ -80,15 +80,18 @@ class NotificationQueue {
     $item = new NotificationItem();
     $item->title = $entity->getTitle();
 
-    $body = $entity->get($fields['body'])->value;
-    if (isset($fields['body']) && $body) {
+    // Prepare a notification info.
+    if (isset($fields['body'])) {
+      $body = $entity->get($fields['body'])->value;
       $item->body = $this->prepareBody($body);
     }
 
+    // Prepare a notification icon.
     if (isset($fields['icon'])) {
       $item->icon = $this->getIconUrl($entity->get($fields['icon']));
     }
 
+    // Prepare a notification url.
     $item->url = $entity->toUrl('canonical', [
       'absolute' => TRUE,
     ])->toString();
@@ -155,7 +158,10 @@ class NotificationQueue {
    *   A trimmed and filtered text.
    */
   protected function prepareBody($raw) {
-    $body = strip_tags($raw);
+    $body = trim(strip_tags($raw));
+    if (empty($body)) {
+      return '';
+    }
     $body = FieldPluginBase::trimText([
       'max_length' => $this->config->get('body_length') ?: 100,
       'html' => FALSE,

@@ -3,6 +3,7 @@
   "description": "Sends browser push notifications to users.",
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",
+  "homepage": "https://www.drupal.org/project/web_push_notification",
   "keywords": [
     "drupal8",
     "module",
@@ -22,7 +23,12 @@
   "authors": [
     {
       "name": "Oleksii Skorobogatko",
-      "homepage": "https://www.soft-industry.com"
+      "homepage": "https://www.soft-industry.com",
+      "email": "skorobogatko.oleksii@gmail.com"
     }
-  ]
+  ],
+  "support": {
+    "issues": "https://www.drupal.org/project/issues/web_push_notification",
+    "source": "https://git.drupalcode.org/project/web_push_notification"
+  }
 }

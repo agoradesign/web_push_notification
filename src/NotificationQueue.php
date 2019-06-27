@@ -129,13 +129,9 @@ class NotificationQueue {
     $trimmed_body = $this->prepareBody($full_body);
 
     while ($ids = $query->range($start, $limit)->execute()) {
-      $item = new NotificationItem();
+      $item = clone $baseItem;
       $item->ids = $ids;
-      $item->title = $baseItem->title;
       $item->body = $trimmed_body;
-      $item->icon = $baseItem->icon;
-      $item->url = $baseItem->url;
-      $item->bundle = $baseItem->bundle;
       $this->moduleHandler->alter('web_push_notification_item', $item, $full_body);
       $this->queue->createItem($item);
       $start += $limit;

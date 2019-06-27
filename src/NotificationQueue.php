@@ -82,8 +82,7 @@ class NotificationQueue {
 
     // Prepare a notification info.
     if (isset($fields['body'])) {
-      $body = $entity->get($fields['body'])->value;
-      $item->body = $this->prepareBody($body);
+      $item->body = $entity->get($fields['body'])->value;
     }
 
     // Prepare a notification icon.
@@ -120,7 +119,7 @@ class NotificationQueue {
       $item = new NotificationItem();
       $item->ids = $ids;
       $item->title = $baseItem->title;
-      $item->body = $baseItem->body;
+      $item->body = $this->prepareBody($baseItem->body);
       $item->icon = $baseItem->icon;
       $item->url = $baseItem->url;
       $this->queue->createItem($item);
@@ -162,10 +161,14 @@ class NotificationQueue {
     if (empty($body)) {
       return '';
     }
+
     $body = FieldPluginBase::trimText([
       'max_length' => $this->config->get('body_length') ?: 100,
+      'word_boundary' => TRUE,
+      'ellipsis' => TRUE,
       'html' => FALSE,
     ], $body);
+
     return $body;
   }
 

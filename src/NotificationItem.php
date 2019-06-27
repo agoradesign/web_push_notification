@@ -40,6 +40,12 @@ class NotificationItem {
   public $icon = '';
 
   /**
+   * @var string
+   *   The bundle name. What bundle is used to create this item.
+   */
+  public $bundle = '';
+
+  /**
    * NotificationItem constructor.
    *
    * @param string $title

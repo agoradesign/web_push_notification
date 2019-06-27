@@ -89,6 +89,7 @@ class NotificationQueue {
 
     $item = new NotificationItem();
     $item->title = $entity->getTitle();
+    $item->bundle = $bundle;
 
     // Prepare a notification info.
     if (isset($fields['body'])) {
@@ -134,6 +135,7 @@ class NotificationQueue {
       $item->body = $trimmed_body;
       $item->icon = $baseItem->icon;
       $item->url = $baseItem->url;
+      $item->bundle = $baseItem->bundle;
       $this->moduleHandler->alter('web_push_notification_item', $item, $full_body);
       $this->queue->createItem($item);
       $start += $limit;

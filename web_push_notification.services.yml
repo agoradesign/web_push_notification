@@ -5,7 +5,7 @@ services:
 
   web_push_notification.queue:
     class: Drupal\web_push_notification\NotificationQueue
-    arguments: ['@queue', '@entity_type.manager', '@config.factory']
+    arguments: ['@queue', '@entity_type.manager', '@config.factory', '@module_handler']
 
   web_push_notification.sender:
     class: Drupal\web_push_notification\WebPushSender

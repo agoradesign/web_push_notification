@@ -4,6 +4,7 @@ namespace Drupal\web_push_notification;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
+use Drupal\Core\Extension\ModuleHandlerInterface;
 use Drupal\Core\Queue\QueueFactory;
 use Drupal\file\Plugin\Field\FieldType\FileFieldItemList;
 use Drupal\node\NodeInterface;
@@ -34,6 +35,11 @@ class NotificationQueue {
   protected $config;
 
   /**
+   * @var \Drupal\Core\Extension\ModuleHandlerInterface
+   */
+  protected $moduleHandler;
+
+  /**
    * SendMessage constructor.
    *
    * @param \Drupal\Core\Queue\QueueFactory $queueFactory
@@ -42,15 +48,19 @@ class NotificationQueue {
    *   The entity manager service.
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory service.
+   * @param \Drupal\Core\Extension\ModuleHandlerInterface $module_handler
+   *   The module handler.
    */
   public function __construct(
     QueueFactory $queueFactory,
     EntityTypeManagerInterface $entityManager,
-    ConfigFactoryInterface $config_factory
+    ConfigFactoryInterface $config_factory,
+    ModuleHandlerInterface $module_handler
   ) {
     $this->queue = $queueFactory->get('web_push_queue');
     $this->entityManager = $entityManager;
     $this->config = $config_factory->get('web_push_notification.settings');
+    $this->moduleHandler = $module_handler;
   }
 
   /**
@@ -114,14 +124,17 @@ class NotificationQueue {
 
     $start = 0;
     $limit = $this->config->get('queue_batch_size');
+    $full_body = $baseItem->body;
+    $trimmed_body = $this->prepareBody($full_body);
 
     while ($ids = $query->range($start, $limit)->execute()) {
       $item = new NotificationItem();
       $item->ids = $ids;
       $item->title = $baseItem->title;
-      $item->body = $this->prepareBody($baseItem->body);
+      $item->body = $trimmed_body;
       $item->icon = $baseItem->icon;
       $item->url = $baseItem->url;
+      $this->moduleHandler->alter('web_push_notification_item', $item, $full_body);
       $this->queue->createItem($item);
       $start += $limit;
     }

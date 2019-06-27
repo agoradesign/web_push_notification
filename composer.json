@@ -2,9 +2,7 @@
   "name": "drupal/web_push_notification",
   "description": "Sends browser push notifications to users.",
   "type": "drupal-module",
-  "license": [
-    "proprietary"
-  ],
+  "license": "GPL-2.0-or-later",
   "keywords": [
     "drupal8",
     "module",

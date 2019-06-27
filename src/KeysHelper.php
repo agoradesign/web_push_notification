@@ -14,18 +14,28 @@ class KeysHelper {
   const SETTINGS = 'web_push_notification.settings';
 
   /**
-   * @var \Drupal\Core\Config\ImmutableConfig
+   * @var \Drupal\Core\Config\Config
    */
   protected $config;
 
   /**
+   * @var string
+   */
+  private $publicKey;
+
+  /**
+   * @var string
+   */
+  private $privateKey;
+
+  /**
    * HelperService constructor.
    *
-   * @param \Drupal\Core\Config\ConfigFactoryInterface $config
+   * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
    *   The config factory.
    */
-  public function __construct(ConfigFactoryInterface $config) {
-    $this->config = $config->get(self::SETTINGS);
+  public function __construct(ConfigFactoryInterface $config_factory) {
+    $this->config = $config_factory->getEditable(self::SETTINGS);
   }
 
   /**
@@ -35,7 +45,10 @@ class KeysHelper {
    *   The public key.
    */
   public function getPublicKey() {
-    return $this->config->get('public_key');
+    if (!$this->publicKey) {
+      $this->publicKey = $this->config->get('public_key');
+    }
+    return $this->publicKey;
   }
 
   /**
@@ -45,7 +58,10 @@ class KeysHelper {
    *   The private key.
    */
   public function getPrivateKey() {
-    return $this->config->get('private_key');
+    if (!$this->privateKey) {
+      $this->privateKey = $this->config->get('private_key');
+    }
+    return $this->privateKey;
   }
 
   /**
@@ -57,7 +73,10 @@ class KeysHelper {
    * @throws \ErrorException
    */
   public function generateKeys() {
-    return VAPID::createVapidKeys();
+    $keys = VAPID::createVapidKeys();
+    $this->publicKey = $keys['publicKey'];
+    $this->privateKey = $keys['privateKey'];
+    return $this;
   }
 
   /**
@@ -82,9 +101,7 @@ class KeysHelper {
    * @return array
    */
   public function getVapidAuth() {
-    if (!$this->isKeysDefined()) {
-      throw new AuthKeysException('Public, private keys must be defined.');
-    }
+    $this->validateKeys();
 
     return [
       'VAPID' => [
@@ -95,6 +112,51 @@ class KeysHelper {
         'privateKey' => $this->getPrivateKey(),
       ],
     ];
+  }
+
+  /**
+   * Validate auth keys.
+   *
+   * @throws \Drupal\web_push_notification\AuthKeysException
+   */
+  protected function validateKeys() {
+    if (!$this->isKeysDefined()) {
+      throw new AuthKeysException('Public and private keys are required.');
+    }
+  }
+
+  /**
+   * Save public and private keys to the module config settings.
+   *
+   * @return $this
+   *
+   * @throws \Drupal\web_push_notification\AuthKeysException
+   */
+  public function save() {
+    $this->validateKeys();
+
+    $this->config
+      ->set('public_key', $this->getPublicKey())
+      ->set('private_key', $this->getPrivateKey())
+      ->save();
+
+    return $this;
+  }
+
+  /**
+   * Set public and private keys.
+   *
+   * @param string $public_key
+   *   The public key.
+   * @param string $private_key
+   *   The private key.
+   *
+   * @return $this
+   */
+  public function setKeys($public_key, $private_key) {
+    $this->publicKey = $public_key;
+    $this->privateKey = $private_key;
+    return $this;
   }
 
 }

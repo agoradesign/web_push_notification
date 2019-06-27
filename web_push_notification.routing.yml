@@ -8,6 +8,16 @@ web_push_notification.settings:
   requirements:
     _permission: 'administer web push notification settings'
 
+web_push_notification.regenerate_keys:
+  path: '/admin/config/services/web-push-notification/regenerate'
+  defaults:
+    _title: 'Regenerate web push notification auth keys'
+    _form: '\Drupal\web_push_notification\Form\ConfirmRegenerateKeys'
+  options:
+    _admin_route: TRUE
+  requirements:
+    _permission: 'administer web push notification settings'
+
 web_push_notification.bundle_configure:
   path: '/admin/config/services/web-push-notification/{bundle}/configure'
   defaults:

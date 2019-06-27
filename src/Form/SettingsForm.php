@@ -114,10 +114,11 @@ class SettingsForm extends ConfigFormBase {
   public function buildForm(array $form, FormStateInterface $form_state) {
     $form = parent::buildForm($form, $form_state);
     $config = $this->config('web_push_notification.settings');
+    $is_keys_defined = $this->keysHelper->isKeysDefined();
 
     $form['auth'] = [
       '#type' => 'details',
-      '#open' => TRUE,
+      '#open' => !$is_keys_defined, // Open when no keys, close when keys exist.
       '#title' => $this->t('Auth parameters'),
     ];
     $form['auth']['public_key'] = [
@@ -136,10 +137,11 @@ class SettingsForm extends ConfigFormBase {
     ];
     $form['auth']['generate'] = [
       '#type' => 'submit',
-      '#value' => $this->t($this->keysHelper->isKeysDefined() ? 'Regenerate keys' : 'Generate keys'),
+      '#value' => $this->t($is_keys_defined ? 'Regenerate keys' : 'Generate keys'),
       '#limit_validation_errors' => [], // Skip required fields validation.
-      '#submit' => ['::generateKeys'],
     ];
+    $form['auth']['generate']['#submit'] = $is_keys_defined ?
+      ['::regenerateKeys'] : ['::generateKeys'];
 
     $form['content'] = [
       '#type' => 'details',
@@ -265,10 +267,12 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('web_push_notification.settings');
 
     // Save the keys.
-    $this->saveKeys(
-      $form_state->getValue('public_key'),
-      $form_state->getValue('private_key')
-    );
+    $public_key = $form_state->getValue('public_key');
+    $private_key = $form_state->getValue('private_key');
+    if ($public_key != $this->keysHelper->getPublicKey() ||
+          $private_key != $this->keysHelper->getPrivateKey()) {
+      $this->keysHelper->setKeys($public_key, $private_key)->save();
+    }
 
     $config
       ->set('queue_batch_size', $form_state->getValue('queue_batch_size'))
@@ -282,27 +286,20 @@ class SettingsForm extends ConfigFormBase {
   }
 
   /**
-   * Form submit callback for keys (re)generation.
+   * Form submit callback for keys generation.
    */
   public function generateKeys(array &$form, FormStateInterface $form_state) {
-    $keys = $this->keysHelper->generateKeys();
-    $this->saveKeys($keys['publicKey'], $keys['privateKey']);
+    $this->keysHelper
+      ->generateKeys()
+      ->save();
     $this->messenger()->addStatus($this->t('Public and private keys have been generated.'));
   }
 
   /**
-   * Saves public and private keys to the module settings.
-   *
-   * @param string $publicKey
-   *   The public key.
-   * @param string $privateKey
-   *   The private key.
+   * Form submit callback for confirm keys regeneration.
    */
-  protected function saveKeys($publicKey, $privateKey) {
-    $this->config('web_push_notification.settings')
-      ->set('public_key', $publicKey)
-      ->set('private_key', $privateKey)
-      ->save();
+  public function regenerateKeys(array &$form, FormStateInterface $form_state) {
+    $form_state->setRedirect('web_push_notification.regenerate_keys');
   }
 
 }

@@ -8,6 +8,7 @@ use Drupal\Core\Form\FormBase;
 use Drupal\Core\Form\FormStateInterface;
 use Drupal\Core\Queue\QueueWorkerManagerInterface;
 use Drupal\Core\Queue\SuspendQueueException;
+use Drupal\Core\Url;
 use Drupal\web_push_notification\KeysHelper;
 use Drupal\web_push_notification\NotificationItem;
 use Drupal\web_push_notification\NotificationQueue;
@@ -125,8 +126,9 @@ class TestNotification extends FormBase {
     $form['test']['body'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Message'),
-      '#description' => $this->t('Keep in mind, the message will be trimmed to %chars characters.', [
+      '#description' => $this->t('Keep in mind that your message will be trimmed to <strong>%chars</strong> characters. You can adjust that value on <a href=":url">Settings</a> page.', [
         '%chars' => $this->config->get('body_length') ?: 100,
+        ':url' => Url::fromRoute('web_push_notification.settings')->toString(),
       ]),
       '#weight' => '0',
       '#required' => TRUE,

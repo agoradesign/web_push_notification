@@ -1,7 +1,7 @@
 {
   "name": "drupal/web_push_notification",
   "description": "Sends browser push notifications to users.",
-  "type": "drupal-module-custom",
+  "type": "drupal-module",
   "license": [
     "proprietary"
   ],

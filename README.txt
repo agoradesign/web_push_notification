@@ -69,3 +69,11 @@ by the 'drush' command:
 
 You can insert the above command in your system cron and invoke it, every 5 - 10 min.
 
+TESTING
+-------
+
+As it said earlier the notifications only work on localhost. To test them, you need to run your site
+on localhost. It can be easily done with the `drush` command in your project root:
+```
+drush serve
+```

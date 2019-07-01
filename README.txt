@@ -25,7 +25,9 @@ REQUIREMENTS
     domain with SSL enabled. For testing purposes you need to use
     localhost (127.0.0.1)
 
-  - curl extension is required (multi_curl).
+  - Please be sure that the following PHP extensions is installed and enabled:
+    - curl extension (https://www.php.net/manual/en/book.curl.php)
+    - gmp extension (https://www.php.net/manual/en/book.gmp.php)
 
   - Web Push library for PHP (installed automatically via composer)
     (https://github.com/web-push-libs/web-push-php)

@@ -3,6 +3,7 @@
 namespace Drupal\web_push_notification\Form;
 
 use Drupal\Core\Config\ConfigFactoryInterface;
+use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
 use Drupal\Core\Form\ConfigFormBase;
 use Drupal\Core\Form\FormStateInterface;
@@ -42,6 +43,11 @@ class SettingsForm extends ConfigFormBase {
   protected $redirectDestination;
 
   /**
+   * @var \Drupal\Core\Entity\EntityFieldManagerInterface
+   */
+  protected $entityFieldManager;
+
+  /**
    * Constructs a \Drupal\system\ConfigFormBase object.
    *
    * @param \Drupal\Core\Config\ConfigFactoryInterface $config_factory
@@ -54,19 +60,23 @@ class SettingsForm extends ConfigFormBase {
    *   The web push TTL converter.
    * @param \Drupal\Core\Routing\RedirectDestinationInterface $redirectDestination
    *   The redirect destination.
+   * @param \Drupal\Core\Entity\EntityFieldManagerInterface $entityFieldManager
+   *   The entity field manager.
    */
   public function __construct(
     ConfigFactoryInterface $config_factory,
     KeysHelper $keys_helper,
     EntityTypeBundleInfoInterface $bundle_info,
     TTL $ttl,
-    RedirectDestinationInterface $redirectDestination
+    RedirectDestinationInterface $redirectDestination,
+    EntityFieldManagerInterface $entityFieldManager
   ) {
     parent::__construct($config_factory);
     $this->keysHelper = $keys_helper;
     $this->bundleInfo = $bundle_info;
     $this->ttl = $ttl;
     $this->redirectDestination = $redirectDestination;
+    $this->entityFieldManager = $entityFieldManager;
   }
 
   /**
@@ -78,7 +88,8 @@ class SettingsForm extends ConfigFormBase {
       $container->get('web_push_notification.keys_helper'),
       $container->get('entity_type.bundle.info'),
       $container->get('web_push_notification.ttl'),
-      $container->get('redirect.destination')
+      $container->get('redirect.destination'),
+      $container->get('entity_field.manager')
     );
   }
 
@@ -204,6 +215,14 @@ class SettingsForm extends ConfigFormBase {
           'class' => ['bundle'],
         ],
         [
+          'data' => $this->t('Body field'),
+          'class' => ['body_field'],
+        ],
+        [
+          'data' => $this->t('Image field'),
+          'class' => ['image_field'],
+        ],
+        [
           'data' => $this->t('Settings'),
           'class' => ['operations'],
         ],
@@ -214,9 +233,28 @@ class SettingsForm extends ConfigFormBase {
     $config = $this->config('web_push_notification.settings');
 
     foreach ($this->getNodeBundles() as $id => $info) {
+
+      // Get human readable bundle field labels.
+      $bundle_fields = $this->entityFieldManager->getFieldDefinitions('node', $id);
+      $fields = $config->get("fields.$id");
+      $body_field = $fields['body'] ?? '';
+      if ($body_field && isset($bundle_fields[$body_field])) {
+        $body_field = $bundle_fields[$body_field]->getLabel();
+      }
+      $image_field = $fields['icon'] ?? '';
+      if ($image_field && isset($bundle_fields[$image_field])) {
+        $image_field = $bundle_fields[$image_field]->getLabel();
+      }
+
       $form[$id] = [
         'bundle' => [
           '#markup' => $info['label'],
+        ],
+        'body_field' => [
+          '#markup' => $body_field,
+        ],
+        'image_field' => [
+          '#markup' => $image_field,
         ],
         'operations' => [
           '#type' => 'operations',
@@ -231,6 +269,7 @@ class SettingsForm extends ConfigFormBase {
           ],
         ],
       ];
+
       $form['#default_value'][$id] = $config->get("bundles.$id");
     }
 

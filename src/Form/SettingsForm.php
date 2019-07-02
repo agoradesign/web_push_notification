@@ -115,7 +115,7 @@ class SettingsForm extends ConfigFormBase {
    * @return array
    *  The list of node bundles.
    */
-  protected function getNodeBundles(): array {
+  protected function getNodeBundles() {
     return $this->bundleInfo->getBundleInfo('node');
   }
 

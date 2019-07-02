@@ -5,6 +5,7 @@ namespace Drupal\web_push_notification;
 use Drupal\Core\Entity\EntityStorageException;
 use Drupal\Core\Entity\EntityTypeManagerInterface;
 use Minishlink\WebPush\MessageSentReport;
+use Psr\Log\LoggerInterface;
 
 /**
  * This service deletes subscriptions that 'rejected' during web push send.
@@ -17,16 +18,27 @@ class SubscriptionPurge {
   protected $entityStorage;
 
   /**
+   * @var \Psr\Log\LoggerInterface
+   */
+  protected $logger;
+
+  /**
    * SubscriptionPurge constructor.
    *
    * @param \Drupal\Core\Entity\EntityTypeManagerInterface $entityType
    *   Entity type manager.
+   * @param \Psr\Log\LoggerInterface $logger
+   *   The logger channel.
    *
    * @throws \Drupal\Component\Plugin\Exception\PluginNotFoundException
    * @throws \Drupal\Component\Plugin\Exception\InvalidPluginDefinitionException
    */
-  public function __construct(EntityTypeManagerInterface $entityType) {
+  public function __construct(
+    EntityTypeManagerInterface $entityType,
+    LoggerInterface $logger
+  ) {
     $this->entityStorage = $entityType->getStorage('wpn_subscription');
+    $this->logger = $logger;
   }
 
   /**
@@ -66,7 +78,7 @@ class SubscriptionPurge {
       $this->entityStorage->delete($entities);
     }
     catch (EntityStorageException $e) {
-      // TODO: log.
+      $this->logger->error($e->getMessage());
     }
   }
 

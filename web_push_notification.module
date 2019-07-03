@@ -38,9 +38,9 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
     $request = \Drupal::service('request_stack')->getCurrentRequest();
     $path = \Drupal::service('path.current')->getPath($request);
     $path = $path === '/' ? $path : rtrim($path, '/');
-    /** @var \Drupal\Core\Path\AliasManager $aliasManager */
-    $aliasManager = \Drupal::service('path.alias_manager');
-    $path_alias = mb_strtolower($aliasManager->getAliasByPath($path));
+    /** @var \Drupal\Core\Path\AliasManager $alias_manager */
+    $alias_manager = \Drupal::service('path.alias_manager');
+    $path_alias = mb_strtolower($alias_manager->getAliasByPath($path));
     /** @var \Drupal\Core\Path\PathMatcher $path_matcher */
     $path_matcher = \Drupal::service('path.matcher');
     $is_matched = $path_matcher->matchPath($path_alias, $pages) ||

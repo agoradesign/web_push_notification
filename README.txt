@@ -48,7 +48,7 @@ CONFIGURATION
 -------------
 
 After the module is installed open its configuration page (admin/config/services/web-push-notification)
-and generate keys by pressing the "Regenerate keys" button.
+and generate keys by pressing the "Generate keys" button.
 Clear the cache and open the front page as an anonymous user. The browser will popup a dialog for subscribing
 for the notifications. Accept it. In the configuration page on the "Subscriptions" tab you should see
 a new subscriber. Go to "Test" tab, fill mandatory "Title" and "Message" fields and send a test message.

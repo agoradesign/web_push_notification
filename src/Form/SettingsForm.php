@@ -180,6 +180,12 @@ class SettingsForm extends ConfigFormBase {
       '#default_value' => $config->get('queue_batch_size') ?: 100,
       '#required' => TRUE,
     ];
+    $form['config']['body_length'] = [
+      '#type' => 'textfield',
+      '#title' => $this->t('Max body length'),
+      '#description' => $this->t('Before sending a notification html tags will be deleted and the body field trimmed to the specified length.'),
+      '#default_value' => $config->get('body_length') ?: 100,
+    ];
     $form['config']['pages'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Pages'),
@@ -189,11 +195,13 @@ class SettingsForm extends ConfigFormBase {
       ]),
       '#default_value' => $config->get('pages'),
     ];
-    $form['config']['body_length'] = [
-      '#type' => 'textfield',
-      '#title' => $this->t('Max body length'),
-      '#description' => $this->t('Before sending a notification html tags will be deleted and the body field trimmed to the specified length.'),
-      '#default_value' => $config->get('body_length') ?: 100,
+    $form['config']['pages_mode'] = [
+      '#type' => 'radios',
+      '#options' => [
+        'show' => $this->t(' Show for the listed pages'),
+        'hide' => $this->t('Hide for the listed pages'),
+      ],
+      '#default_value' => $config->get('pages_mode') ?: 'hide',
     ];
 
     return $form;
@@ -319,6 +327,7 @@ class SettingsForm extends ConfigFormBase {
       ->set('push_ttl', $form_state->getValue('push_ttl'))
       ->set('pages', $form_state->getValue('pages'))
       ->set('bundles', $form_state->getValue('bundles'))
+      ->set('pages_mode', $form_state->getValue('pages_mode'))
       ->save();
 
     $this->messenger()->addStatus($this->t('Web Push notification settings have been updated.'));

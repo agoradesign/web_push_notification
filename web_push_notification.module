@@ -14,7 +14,8 @@ use Drupal\Core\Entity\EntityInterface;
  * Attaches register service worker script on a page.
  */
 function web_push_notification_page_attachments_alter(array &$attachments) {
-  $public_key = Drupal::config('web_push_notification.settings')->get('public_key');
+  $config = \Drupal::config('web_push_notification.settings');
+  $public_key = $config->get('public_key');
   if (empty($public_key)) {
     return;
   }
@@ -31,6 +32,7 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
   // Check pages on which service worker should work.
   $pages = \Drupal::config('web_push_notification.settings')->get('pages');
   if ($pages) {
+    $show = $config->get('pages_mode');
     $pages = mb_strtolower($pages);
     /** @var  \Symfony\Component\HttpFoundation\Request $request */
     $request = \Drupal::service('request_stack')->getCurrentRequest();
@@ -41,8 +43,17 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
     $path_alias = mb_strtolower($aliasManager->getAliasByPath($path));
     /** @var \Drupal\Core\Path\PathMatcher $path_matcher */
     $path_matcher = \Drupal::service('path.matcher');
-    if ($path_matcher->matchPath($path_alias, $pages) || (($path != $path_alias) && $path_matcher->matchPath($path, $pages))) {
-      return;
+    $is_matched = $path_matcher->matchPath($path_alias, $pages) ||
+      $path_matcher->matchPath($path, $pages);
+    if ($is_matched) {
+      if ($show == 'hide') {
+        return;
+      }
+    }
+    else {
+      if ($show == 'show') {
+        return;
+      }
     }
   }
 

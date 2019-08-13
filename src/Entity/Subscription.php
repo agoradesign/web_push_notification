@@ -115,11 +115,17 @@ class Subscription extends ContentEntityBase implements SubscriptionInterface {
     $fields['key'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Key'))
       ->setDescription(t('Key'))
+      ->setSettings([
+        'max_length' => 191,
+      ])
       ->setRequired(TRUE);
 
     $fields['token'] = BaseFieldDefinition::create('string')
       ->setLabel(t('Token'))
       ->setDescription(t('Token'))
+      ->setSettings([
+        'max_length' => 191,
+      ])
       ->setRequired(TRUE);
 
     $fields['endpoint'] = BaseFieldDefinition::create('string')

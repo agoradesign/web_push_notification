@@ -189,7 +189,7 @@ class SettingsForm extends ConfigFormBase {
     $form['config']['pages'] = [
       '#type' => 'textarea',
       '#title' => $this->t('Pages'),
-      '#description' => $this->t("Specify page paths where no notifications will be. Enter one path per line. The '*' character is a wildcard. An example path is %user-wildcard for every user page. %front is the front page.", [
+      '#description' => $this->t("Specify page paths and select the notification option below. Enter one path per line. The '*' character is a wildcard. An example path is %user-wildcard for every user page. %front is the front page.", [
         '%user-wildcard' => '/user/*',
         '%front' => '<front>',
       ]),

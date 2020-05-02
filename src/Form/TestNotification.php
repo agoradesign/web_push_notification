@@ -173,7 +173,11 @@ class TestNotification extends FormBase {
     $item->title = $form_state->getValue('title');
     $item->body = $form_state->getValue('body');
     $item->icon = $form_state->getValue('icon');
+
     $item->url = $form_state->getValue('url');
+    if (empty($item->url)) {
+        $item->url = Url::fromRoute('<front>', [], ['absolute' => TRUE])->toString();
+    }
 
     // TODO: make a batch process.
 

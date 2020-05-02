@@ -27,21 +27,26 @@ self.addEventListener('push', function (event) {
     data = event.data.json();
     event.waitUntil(self.registration.showNotification(data.title, {
       body: data.body,
-      icon: data.icon
+      icon: data.icon,
+      data: {
+        url: data.url
+      }
     }));
   }
 });
 
 self.addEventListener('notificationclick', function (event) {
   event.waitUntil(
-    self.clients.matchAll().then(function (clientList) {
-      if (clientList.length > 0) {
-        return clientList[0].focus();
-      }
-      if (event.data) {
-        var data = event.data.json();
-        return self.clients.openWindow(data.url);
-      }
-    })
+    self.clients.matchAll({ type: 'window' })
+      .then(function (clientList) {
+        var url = event.notification.data.url || '/';
+        for (var i = 0; i < clientList.length; i++) {
+          var client = clientList[i];
+          if (client.url == url && 'focus' in client) {
+            return client.focus();
+          }
+        }
+        return self.clients.openWindow(url);
+      })
   );
 });

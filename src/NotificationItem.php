@@ -66,7 +66,7 @@ class NotificationItem {
    *   A JSON encoded payload.
    */
   public function payload() {
-    return JSON::encode([
+    return Json::encode([
       'title' => $this->title,
       'body' => $this->body,
       'url' => $this->url,

@@ -7,6 +7,7 @@
 
 use Drupal\Core\Url;
 use Drupal\Core\Entity\EntityInterface;
+use Drupal\node\NodeInterface;
 
 /**
  * Implements hook_page_attachments_alter().
@@ -70,7 +71,11 @@ function web_push_notification_page_attachments_alter(array &$attachments) {
 function web_push_notification_entity_insert(EntityInterface $entity) {
   $bundles = \Drupal::config('web_push_notification.settings')->get('bundles');
   $bundle = $entity->bundle();
-  if (isset($bundles[$bundle]) && $bundles[$bundle]) {
+  $status = FALSE;
+  if ($entity instanceof NodeInterface) {
+    $status = (bool) $entity->status->value;
+  }
+  if ($status && isset($bundles[$bundle]) && $bundles[$bundle]) {
     /** @var \Drupal\web_push_notification\NotificationQueue $sender */
     $sender = \Drupal::service('web_push_notification.queue');
     $sender->start($entity);

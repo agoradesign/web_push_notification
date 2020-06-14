@@ -16,7 +16,6 @@
     "php" : "^7.1",
     "ext-gmp": "*",
     "ext-curl": "*",
-    "drupal/core": "^8.6.1",
     "minishlink/web-push": "^5.1"
   },
   "require-dev": {

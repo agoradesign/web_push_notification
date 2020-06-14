@@ -61,6 +61,10 @@
               endpoint: subscription.endpoint
             });
 
+          })
+          .catch(function (err) {
+            // registration is blocked by the user.
+            // console.log(err);
           });
       });
 

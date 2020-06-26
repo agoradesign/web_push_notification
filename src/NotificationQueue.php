@@ -153,7 +153,7 @@ class NotificationQueue {
         return '';
       }
       $file = reset($entities);
-      return $file->url();
+      return $file->toUrl();
     }
     return '';
   }

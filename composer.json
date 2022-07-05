@@ -1,5 +1,5 @@
 {
-  "name": "drupal/web_push_notification",
+  "name": "agoradesign/web_push_notification",
   "description": "Sends browser push notifications to users.",
   "type": "drupal-module",
   "license": "GPL-2.0-or-later",

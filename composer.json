@@ -13,7 +13,7 @@
     "browser push notifications"
   ],
   "require": {
-    "php" : "^7.1",
+    "php" : "^7.1 || ^8.0",
     "ext-gmp": "*",
     "ext-curl": "*",
     "minishlink/web-push": "^5.1"

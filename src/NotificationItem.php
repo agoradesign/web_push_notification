@@ -41,6 +41,12 @@ class NotificationItem {
 
   /**
    * @var string
+   *  The notification image.
+   */
+  public $image = '';
+
+  /**
+   * @var string
    *   The bundle name. What bundle is used to create this item.
    */
   public $bundle = '';
@@ -71,6 +77,7 @@ class NotificationItem {
       'body' => $this->body,
       'url' => $this->url,
       'icon' => $this->icon,
+      'image' => $this->image,
     ]);
   }
 }

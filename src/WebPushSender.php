@@ -103,7 +103,7 @@ class WebPushSender implements WebPushSenderInterface {
     $webPush = $this->getWebPush();
     $subscriptions = $this->createSubscriptions($item);
     foreach ($subscriptions as $subscription) {
-      $webPush->queueNotification($subscription['subscription'], $subscription['payload']);
+      $webPush->sendOneNotification($subscription['subscription'], $subscription['payload']);
     }
     /** @var \Minishlink\WebPush\MessageSentReport $report */
     foreach ($webPush->flush(count($subscriptions)) as $report) {

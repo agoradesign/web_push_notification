@@ -56,7 +56,7 @@ class WebPushNotificationController extends ControllerBase {
    * Gets the service worker javascript handler.
    *
    * @return \Symfony\Component\HttpFoundation\BinaryFileResponse
-   *  The service worker content.
+   *   The service worker content.
    */
   public function serviceWorker() {
     $module_path = $this->moduleHandler->getModule('web_push_notification')->getPath();
@@ -66,7 +66,7 @@ class WebPushNotificationController extends ControllerBase {
       throw new NotFoundHttpException();
     }
 
-    return BinaryFileResponse::create($uri, 200, [
+    return new BinaryFileResponse($uri, 200, [
       'Content-Type' => 'text/javascript',
       'Content-Length' => filesize($uri),
     ]);
@@ -101,6 +101,7 @@ class WebPushNotificationController extends ControllerBase {
       $ids = \Drupal::entityQuery('wpn_subscription')
         ->condition('key', $key)
         ->condition('token', $token)
+        ->accessCheck(FALSE)
         ->execute();
       if (empty($ids)) {
         $subscription = Subscription::create([
@@ -115,7 +116,7 @@ class WebPushNotificationController extends ControllerBase {
       throw new BadRequestHttpException();
     }
 
-    return new JsonResponse(['status' => true]);
+    return new JsonResponse(['status' => TRUE]);
   }
 
 }

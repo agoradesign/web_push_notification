@@ -105,7 +105,7 @@ class SettingsForm extends ConfigFormBase {
    */
   protected function getEditableConfigNames() {
     return [
-      'web_push_notification.settings'
+      'web_push_notification.settings',
     ];
   }
 
@@ -113,7 +113,7 @@ class SettingsForm extends ConfigFormBase {
    * Returns a list of node bundles.
    *
    * @return array
-   *  The list of node bundles.
+   *   The list of node bundles.
    */
   protected function getNodeBundles() {
     return $this->bundleInfo->getBundleInfo('node');
@@ -129,7 +129,8 @@ class SettingsForm extends ConfigFormBase {
 
     $form['auth'] = [
       '#type' => 'details',
-      '#open' => !$is_keys_defined, // Open when no keys, close when keys exist.
+      // Open when no keys, close when keys exist.
+      '#open' => !$is_keys_defined,
       '#title' => $this->t('Auth parameters'),
     ];
     $form['auth']['public_key'] = [
@@ -149,7 +150,8 @@ class SettingsForm extends ConfigFormBase {
     $form['auth']['generate'] = [
       '#type' => 'submit',
       '#value' => $this->t($is_keys_defined ? 'Regenerate keys' : 'Generate keys'),
-      '#limit_validation_errors' => [], // Skip required fields validation.
+      // Skip required fields validation.
+      '#limit_validation_errors' => [],
     ];
     $form['auth']['generate']['#submit'] = $is_keys_defined ?
       ['::regenerateKeys'] : ['::generateKeys'];

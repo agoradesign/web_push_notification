@@ -80,4 +80,5 @@ class NotificationItem {
       'image' => $this->image,
     ]);
   }
+
 }

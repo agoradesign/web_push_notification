@@ -2,8 +2,6 @@
 
 namespace Drupal\web_push_notification\Plugin\QueueWorker;
 
-use Drupal\Core\Annotation\QueueWorker;
-use Drupal\Core\Annotation\Translation;
 use Drupal\Core\Queue\QueueWorkerBase;
 
 /**

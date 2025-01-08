@@ -2,6 +2,7 @@
 
 namespace Drupal\web_push_notification\Form;
 
+use Drupal\field\FieldConfigInterface;
 use Drupal\Core\Config\ConfigFactoryInterface;
 use Drupal\Core\Entity\EntityFieldManagerInterface;
 use Drupal\Core\Entity\EntityTypeBundleInfoInterface;
@@ -21,7 +22,7 @@ class BundleConfigForm extends ConfigFormBase {
   protected $entityFieldManager;
 
   /**
-   * @var EntityTypeBundleInfoInterface
+   * @var \Drupal\Core\Entity\EntityTypeBundleInfoInterface
    */
   protected $bundleInfo;
 
@@ -87,7 +88,7 @@ class BundleConfigForm extends ConfigFormBase {
 
     $options = [];
     foreach ($this->getBundleFields($bundle) as $id => $field) {
-      if ($field instanceof \Drupal\field\FieldConfigInterface) {
+      if ($field instanceof FieldConfigInterface) {
         $options[$id] = $field->label();
       }
     }

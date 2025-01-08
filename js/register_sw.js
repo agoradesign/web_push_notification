@@ -3,7 +3,7 @@
  * Register service worker.
  */
 
-(function ($, Drupal) {
+(function ($, Drupal, once) {
 
   function urlBase64ToUint8Array(base64String) {
     var padding = '='.repeat((4 - base64String.length % 4) % 4);
@@ -23,8 +23,7 @@
   Drupal.behaviors.webPushNotification = {
 
     attach: function (context, settings) {
-
-      $('body').once('web_push_notification').each(function () {
+      once('web_push_notification', 'body').forEach(function () {
         if (!('serviceWorker' in navigator)) {
           return;
         }
@@ -72,4 +71,4 @@
 
   }
 
-})(jQuery, Drupal);
+})(jQuery, Drupal, once);

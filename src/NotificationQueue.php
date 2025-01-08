@@ -121,7 +121,8 @@ class NotificationQueue {
   public function startWithItem(NotificationItem $baseItem) {
     $query = $this->entityManager
       ->getStorage('wpn_subscription')
-      ->getQuery();
+      ->getQuery()
+      ->accessCheck(FALSE);
 
     $start = 0;
     $limit = $this->config->get('queue_batch_size');
